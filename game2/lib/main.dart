@@ -32,7 +32,8 @@ class HomeScreen extends StatelessWidget {
             Positioned.fill(
               child: Image.asset(
                 'assets/images/background.jpg',
-                width: MediaQuery.of(context).size.width,
+                width: double.infinity,
+                height: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
@@ -69,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const QuizGame()),
+                      MaterialPageRoute(builder: (context) => const QuizGame()), // Navigate to the game screen
                     );
                   },
                   child: const Text('Start Quiz'),
