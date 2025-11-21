@@ -15,7 +15,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   
   // Frog chat system
   bool showFrog = true;
-  String frogMessage = "Hi! I'm Eco Frog! 🐸 Ready to learn about sustainability?";
+  String frogMessage = "Hi! I'm Professor Davis Green! 🐸 Ready to learn about sustainability?";
   late AnimationController _frogAnimationController;
   late Animation<double> _frogBounceAnimation;
 
