@@ -1,0 +1,53 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      
+      - name: Verify Flutter Installation
+        run: |
+          flutter --version
+          flutter doctor
+      
+      - name: Clean Previous Builds
+        run: flutter clean
+      
+      - name: Get Dependencies
+        run: flutter pub get
+      
+      - name: Build Flutter Web
+        run: flutter build web --release --base-href="/game2.nosync/"
+      
+      - name: Verify Build Output
+        run: ls -la build/web/
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          force_orphan: true
