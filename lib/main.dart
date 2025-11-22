@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Davis Sustainability Success',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomeScreen(),
     );
   }
@@ -64,46 +62,53 @@ class HomeScreen extends StatelessWidget {
             //background image
             Positioned.fill(
               child: Image.asset(
-                'images/UI/background.png',
+                'assets/images/UI/background.png',
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
 
-          //Prof Davis
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.05, // % from bottom
-            left: MediaQuery.of(context).size.width * -0.02,    // 2% from left
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.4,   // Reduced to 40% to ensure it fits
-              height: MediaQuery.of(context).size.height * 0.4,  // Reduced to 40% to ensure it fits
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('images/ProfDavisGreen/davisarm.png'),
+            //Prof Davis
+            Positioned(
+              bottom:
+                  MediaQuery.of(context).size.height * 0.05, // % from bottom
+              left: MediaQuery.of(context).size.width * -0.02, // 2% from left
+              child: Container(
+                width:
+                    MediaQuery.of(context).size.width *
+                    0.4, // Reduced to 40% to ensure it fits
+                height:
+                    MediaQuery.of(context).size.height *
+                    0.4, // Reduced to 40% to ensure it fits
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                      'assets/images/ProfDavisGreen/davisarm.png',
+                    ),
+                    fit: BoxFit.contain,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+
+            //Watertower
+            Positioned(
+              top: 40,
+              right: 40,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.25,
+                child: Image.asset(
+                  'assets/images/Objects/watertower.png',
                   fit: BoxFit.contain,
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
             ),
-          ),
 
-          //Watertower
-          Positioned(
-            top: 40,
-            right: 40,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.25,
-              child: Image.asset(
-                'images/Objects/watertower.png',
-                 fit: BoxFit.contain,
-              ),
-            ),
-          ),
-
-          //Title and Start Button
-          Center(
-            child: Column(
+            //Title and Start Button
+            Center(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
