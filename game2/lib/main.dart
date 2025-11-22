@@ -107,9 +107,9 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _outlinedTitleLine('A GREENER DAVIS'),
+                  _outlinedTitleLine('A Greener Davis'),
                   const SizedBox(height: 8),
-                  _outlinedTitleLine('ADVENTURE!'),
+                  _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
