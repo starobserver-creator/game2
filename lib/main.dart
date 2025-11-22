@@ -31,6 +31,7 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 64,
             fontFamily: 'GrilledCheese',
+            fontFamilyFallback: const ['Roboto'],
             fontWeight: FontWeight.bold,
             foreground: Paint()
               ..style = PaintingStyle.stroke
@@ -45,6 +46,7 @@ class HomeScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 64,
             fontFamily: 'GrilledCheese',
+            fontFamilyFallback: ['Roboto'],
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 16, 0, 134),
           ),
