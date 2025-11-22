@@ -35,19 +35,23 @@ jobs:
       
       - name: Clean Previous Builds
         run: flutter clean
+        working-directory: ./game2
       
       - name: Get Dependencies
         run: flutter pub get
+        working-directory: ./game2
       
       - name: Build Flutter Web
         run: flutter build web --release --base-href="/game2.nosync/"
+        working-directory: ./game2
       
       - name: Verify Build Output
         run: ls -la build/web/
+        working-directory: ./game2
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
+          publish_dir: ./game2/build/web
           force_orphan: true
