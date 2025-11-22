@@ -22,7 +22,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   final List<Question> questions = [
     // Stormwater
     Question(
-      questionText: "What should you do if you accidentally drop trash on the ground?",
+      questionText: "🗑️ What should you do if you accidentally drop trash on the ground?",
       options: [
         OptionWithImage(text: "Pick it up right away", icon: Icons.cleaning_services),
         OptionWithImage(text: "Leave it for someone else", icon: Icons.block),
@@ -32,7 +32,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 0,
     ),
     Question(
-      questionText: "After you put something in your outdoor trash bin, what should you do?",
+      questionText: "♻️ After you put something in your outdoor trash bin, what should you do?",
       options: [
         OptionWithImage(text: "Leave the lid open", icon: Icons.open_in_full),
         OptionWithImage(text: "Make sure the trash bin lid closes completely", icon: Icons.done),
@@ -43,7 +43,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // Water Conservation
     Question(
-      questionText: "What should you do if you find a leaky faucet?",
+      questionText: "💧 What should you do if you find a leaky faucet?",
       options: [
         OptionWithImage(text: "Ignore it", icon: Icons.close),
         OptionWithImage(text: "Tell someone so it can get repaired", icon: Icons.report),
@@ -53,7 +53,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 1,
     ),
     Question(
-      questionText: "What is the best time to water your yard?",
+      questionText: "🌱 What is the best time to water your yard?",
       options: [
         OptionWithImage(text: "Midday", icon: Icons.wb_sunny),
         OptionWithImage(text: "Early morning or at night", icon: Icons.nights_stay),
@@ -64,7 +64,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // Recycling
     Question(
-      questionText: "What should you do with a large empty cardboard box?",
+      questionText: "📦 What should you do with a large empty cardboard box?",
       options: [
         OptionWithImage(text: "Throw it in the trash", icon: Icons.delete),
         OptionWithImage(text: "Burn it", icon: Icons.local_fire_department),
@@ -74,7 +74,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 2,
     ),
     Question(
-      questionText: "What should you do with an apple core?",
+      questionText: "🍎 What should you do with an apple core?",
       options: [
         OptionWithImage(text: "Throw in trash", icon: Icons.delete),
         OptionWithImage(text: "Place it in the organics bin", icon: Icons.compost),
@@ -84,7 +84,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 1,
     ),
     Question(
-      questionText: "Which statement is true about recycling?",
+      questionText: "🔄 Which statement is true about recycling?",
       options: [
         OptionWithImage(text: "Bag all your recyclables", icon: Icons.shopping_bag),
         OptionWithImage(text: "Don't bag recyclables – place them loose in the cart", icon: Icons.recycling),
@@ -95,7 +95,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // IPM (Integrated Pest Management)
     Question(
-      questionText: "Which statement is true?",
+      questionText: "🐛 Which statement is true?",
       options: [
         OptionWithImage(text: "All insects are bad and harmful", icon: Icons.bug_report),
         OptionWithImage(text: "Not all insects are bad – many are helpful", icon: Icons.pets),
@@ -105,7 +105,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 1,
     ),
     Question(
-      questionText: "If you have a fruit tree at home, what should you do?",
+      questionText: "🌳 If you have a fruit tree at home, what should you do?",
       options: [
         OptionWithImage(text: "Leave fallen fruit on the ground", icon: Icons.forest),
         OptionWithImage(text: "Pick up fallen fruit to prevent pests", icon: Icons.agriculture),
@@ -116,7 +116,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // Pretreatment
     Question(
-      questionText: "What should you do with extra oils and grease after cooking?",
+      questionText: "🍳 What should you do with extra oils and grease after cooking?",
       options: [
         OptionWithImage(text: "Pour down the sink", icon: Icons.water),
         OptionWithImage(text: "Wipe up with paper towels and place in organics bin", icon: Icons.cleaning_services),
@@ -126,7 +126,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       correctAnswer: 1,
     ),
     Question(
-      questionText: "Is it OK to flush wipes down the toilet?",
+      questionText: "🚽 Is it OK to flush wipes down the toilet?",
       options: [
         OptionWithImage(text: "Yes, all wipes are flushable", icon: Icons.done),
         OptionWithImage(text: "No, the toilet is not a trash can. Only flush poo, pee and toilet paper.", icon: Icons.block),
@@ -137,7 +137,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // Wildlife
     Question(
-      questionText: "Is it ok to feed ducks and geese at a pond?",
+      questionText: "🦆 Is it ok to feed ducks and geese at a pond?",
       options: [
         OptionWithImage(text: "Yes, they love bread", icon: Icons.restaurant),
         OptionWithImage(text: "Yes, all food is good for them", icon: Icons.done),
@@ -148,7 +148,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     ),
     // Water Quality
     Question(
-      questionText: "What's the better environmental choice?",
+      questionText: "🥤 What's the better environmental choice?",
       options: [
         OptionWithImage(text: "Buy lots of bottled water", icon: Icons.shopping_cart),
         OptionWithImage(text: "Drink tap water instead of buying bottled water", icon: Icons.water_drop),
