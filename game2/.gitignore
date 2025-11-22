@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 pubspec.lock
+/web/*
 
 # IntelliJ related
 *.iml
