@@ -23,6 +23,38 @@ class MyApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Widget _outlinedTitleLine(String text) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 64,
+            fontFamily: 'GrilledCheese',
+            fontWeight: FontWeight.bold,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 8
+              ..color = Colors.white,
+          ),
+        ),
+        const SizedBox.shrink(),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 64,
+            fontFamily: 'GrilledCheese',
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 16, 0, 134),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +80,7 @@ class HomeScreen extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.4,  // Reduced to 40% to ensure it fits
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('images/ProfDavisGreen/davisarm.png'), // Replace with your desired image
+                  image: AssetImage('images/ProfDavisGreen/davisarm.png'),
                   fit: BoxFit.contain,
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -72,29 +104,27 @@ class HomeScreen extends StatelessWidget {
           //Title and Start Button
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'A Greener Davis Adventure!',
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _outlinedTitleLine('A GREENER DAVIS'),
+                  const SizedBox(height: 8),
+                  _outlinedTitleLine('ADVENTURE!'),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QuizGame(),
+                        ),
+                      );
+                    },
+                    child: const Text('Start Quiz'),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const QuizGame()), // Navigate to the game screen
-                    );
-                  },
-                  child: const Text('Start Quiz'),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ],
         ),
       ),
