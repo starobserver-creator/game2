@@ -140,7 +140,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   void _showWelcomeMessage() {
     setState(() {
       showFrog = true;
-      frogMessage = "Hi! I'm Eco Frog! 🐸 Ready to learn about sustainability?";
+      frogMessage = "Hi! I'm Professor Green! 🐸 Ready to learn about sustainability?";
     });
   }
 
