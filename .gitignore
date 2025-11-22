@@ -33,7 +33,6 @@ migrate_working_dir/
 .pub/
 build/
 pubspec.lock
-.github/workflows/main.yml
 
 # Symbolication related
 app.*.symbols
