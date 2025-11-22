@@ -20,53 +20,140 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   late Animation<double> _frogBounceAnimation;
 
   final List<Question> questions = [
+    // Stormwater
     Question(
-      questionText: "Which of these actions helps reduce your carbon footprint the most?",
+      questionText: "What should you do if you accidentally drop trash on the ground?",
       options: [
-        OptionWithImage(text: "Driving a car daily", icon: Icons.directions_car),
-        OptionWithImage(text: "Using public transport", icon: Icons.train),
-        OptionWithImage(text: "Flying frequently", icon: Icons.flight),
-        OptionWithImage(text: "Walking everywhere", icon: Icons.directions_walk),
+        OptionWithImage(text: "Pick it up right away", icon: Icons.cleaning_services),
+        OptionWithImage(text: "Leave it for someone else", icon: Icons.block),
+        OptionWithImage(text: "Push it into the gutter", icon: Icons.water),
+        OptionWithImage(text: "Ignore it", icon: Icons.close),
       ],
-      correctAnswer: 3,
+      correctAnswer: 0,
     ),
     Question(
-      questionText: "What is the most sustainable energy source?",
+      questionText: "After you put something in your outdoor trash bin, what should you do?",
       options: [
-        OptionWithImage(text: "Coal power", icon: Icons.factory),
-        OptionWithImage(text: "Solar power", icon: Icons.wb_sunny),
-        OptionWithImage(text: "Oil power", icon: Icons.oil_barrel),
-        OptionWithImage(text: "Nuclear power", icon: Icons.flash_on),
+        OptionWithImage(text: "Leave the lid open", icon: Icons.open_in_full),
+        OptionWithImage(text: "Make sure the trash bin lid closes completely", icon: Icons.done),
+        OptionWithImage(text: "Tip it over", icon: Icons.warning),
+        OptionWithImage(text: "Leave it for days", icon: Icons.schedule),
+      ],
+      correctAnswer: 1,
+    ),
+    // Water Conservation
+    Question(
+      questionText: "What should you do if you find a leaky faucet?",
+      options: [
+        OptionWithImage(text: "Ignore it", icon: Icons.close),
+        OptionWithImage(text: "Tell someone so it can get repaired", icon: Icons.report),
+        OptionWithImage(text: "Let it drip forever", icon: Icons.water_drop),
+        OptionWithImage(text: "Cover it with bandage", icon: Icons.medical_services),
       ],
       correctAnswer: 1,
     ),
     Question(
-      questionText: "Which practice helps conserve water?",
+      questionText: "What is the best time to water your yard?",
       options: [
-        OptionWithImage(text: "Long showers", icon: Icons.shower),
-        OptionWithImage(text: "Leaving taps running", icon: Icons.water_drop),
-        OptionWithImage(text: "Collecting rainwater", icon: Icons.cloud),
-        OptionWithImage(text: "Washing car daily", icon: Icons.local_car_wash),
+        OptionWithImage(text: "Midday", icon: Icons.wb_sunny),
+        OptionWithImage(text: "Early morning or at night", icon: Icons.nights_stay),
+        OptionWithImage(text: "During rain", icon: Icons.cloud_queue),
+        OptionWithImage(text: "Never", icon: Icons.block),
+      ],
+      correctAnswer: 1,
+    ),
+    // Recycling
+    Question(
+      questionText: "What should you do with a large empty cardboard box?",
+      options: [
+        OptionWithImage(text: "Throw it in the trash", icon: Icons.delete),
+        OptionWithImage(text: "Burn it", icon: Icons.local_fire_department),
+        OptionWithImage(text: "Flatten it and place it next to the recycling cart", icon: Icons.recycling),
+        OptionWithImage(text: "Leave it on the street", icon: Icons.block),
       ],
       correctAnswer: 2,
     ),
     Question(
-      questionText: "What should you do with plastic bottles?",
+      questionText: "What should you do with an apple core?",
       options: [
         OptionWithImage(text: "Throw in trash", icon: Icons.delete),
-        OptionWithImage(text: "Burn them", icon: Icons.local_fire_department),
-        OptionWithImage(text: "Recycle them", icon: Icons.recycling),
-        OptionWithImage(text: "Bury them", icon: Icons.construction),
+        OptionWithImage(text: "Place it in the organics bin", icon: Icons.compost),
+        OptionWithImage(text: "Leave it outside", icon: Icons.forest),
+        OptionWithImage(text: "Flush it down toilet", icon: Icons.water),
+      ],
+      correctAnswer: 1,
+    ),
+    Question(
+      questionText: "Which statement is true about recycling?",
+      options: [
+        OptionWithImage(text: "Bag all your recyclables", icon: Icons.shopping_bag),
+        OptionWithImage(text: "Don't bag recyclables – place them loose in the cart", icon: Icons.recycling),
+        OptionWithImage(text: "Mix recyclables with trash", icon: Icons.merge),
+        OptionWithImage(text: "Recycle only sometimes", icon: Icons.schedule),
+      ],
+      correctAnswer: 1,
+    ),
+    // IPM (Integrated Pest Management)
+    Question(
+      questionText: "Which statement is true?",
+      options: [
+        OptionWithImage(text: "All insects are bad and harmful", icon: Icons.bug_report),
+        OptionWithImage(text: "Not all insects are bad – many are helpful", icon: Icons.pets),
+        OptionWithImage(text: "Insects don't matter", icon: Icons.block),
+        OptionWithImage(text: "You should kill all insects", icon: Icons.warning),
+      ],
+      correctAnswer: 1,
+    ),
+    Question(
+      questionText: "If you have a fruit tree at home, what should you do?",
+      options: [
+        OptionWithImage(text: "Leave fallen fruit on the ground", icon: Icons.forest),
+        OptionWithImage(text: "Pick up fallen fruit to prevent pests", icon: Icons.agriculture),
+        OptionWithImage(text: "Pour chemicals on the tree", icon: Icons.warning),
+        OptionWithImage(text: "Cut down the tree", icon: Icons.close),
+      ],
+      correctAnswer: 1,
+    ),
+    // Pretreatment
+    Question(
+      questionText: "What should you do with extra oils and grease after cooking?",
+      options: [
+        OptionWithImage(text: "Pour down the sink", icon: Icons.water),
+        OptionWithImage(text: "Wipe up with paper towels and place in organics bin", icon: Icons.cleaning_services),
+        OptionWithImage(text: "Flush down toilet", icon: Icons.water),
+        OptionWithImage(text: "Leave on counter", icon: Icons.block),
+      ],
+      correctAnswer: 1,
+    ),
+    Question(
+      questionText: "Is it OK to flush wipes down the toilet?",
+      options: [
+        OptionWithImage(text: "Yes, all wipes are flushable", icon: Icons.done),
+        OptionWithImage(text: "No, the toilet is not a trash can. Only flush poo, pee and toilet paper.", icon: Icons.block),
+        OptionWithImage(text: "Only flush some wipes", icon: Icons.schedule),
+        OptionWithImage(text: "Yes, it doesn't matter", icon: Icons.close),
+      ],
+      correctAnswer: 1,
+    ),
+    // Wildlife
+    Question(
+      questionText: "Is it ok to feed ducks and geese at a pond?",
+      options: [
+        OptionWithImage(text: "Yes, they love bread", icon: Icons.restaurant),
+        OptionWithImage(text: "Yes, all food is good for them", icon: Icons.done),
+        OptionWithImage(text: "No, never feed wild animals, it does more harm than good.", icon: Icons.block),
+        OptionWithImage(text: "Only feed sometimes", icon: Icons.schedule),
       ],
       correctAnswer: 2,
     ),
+    // Water Quality
     Question(
-      questionText: "Which food choice is most environmentally friendly?",
+      questionText: "What's the better environmental choice?",
       options: [
-        OptionWithImage(text: "Beef daily", icon: Icons.restaurant),
-        OptionWithImage(text: "Local vegetables", icon: Icons.eco),
-        OptionWithImage(text: "Imported fruits", icon: Icons.flight_takeoff),
-        OptionWithImage(text: "Processed foods", icon: Icons.fastfood),
+        OptionWithImage(text: "Buy lots of bottled water", icon: Icons.shopping_cart),
+        OptionWithImage(text: "Drink tap water instead of buying bottled water", icon: Icons.water_drop),
+        OptionWithImage(text: "Use plastic bottles", icon: Icons.warning),
+        OptionWithImage(text: "All water sources are the same", icon: Icons.block),
       ],
       correctAnswer: 1,
     ),
