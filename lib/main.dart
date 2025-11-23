@@ -25,8 +25,29 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool _isPressed = false;
+
+  late AnimationController _cloudController;
+  late Animation<double> _cloudAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _cloudController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 20),
+    )..repeat();
+
+    _cloudAnimation = Tween<double>(begin: 1.2, end: -0.2).animate(_cloudController);
+  }
+
+  @override
+  void dispose() {
+    _cloudController.dispose();
+    super.dispose();
+  }
 
   Widget _outlinedTitleLine(String text) {
     return Stack(
@@ -76,6 +97,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: double.infinity,
                 fit: BoxFit.cover,
               ),
+            ),
+
+            //First moving cloud
+            AnimatedBuilder(
+              animation: _cloudController,
+              builder: (context, child) {
+                return Positioned(
+                  top: MediaQuery.of(context).size.height * 0.15,
+                  left: MediaQuery.of(context).size.width * _cloudAnimation.value,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    child: Image.asset(
+                      'assets/images/Objects/cloud1.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            //Second moving cloud offset so they loop smoothly
+            AnimatedBuilder(
+              animation: _cloudController,
+              builder: (context, child) {
+                return Positioned(
+                  top: MediaQuery.of(context).size.height * 0.25,
+                  left: MediaQuery.of(context).size.width * (_cloudAnimation.value + 1.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    child: Image.asset(
+                      'assets/images/Objects/cloud2.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
             ),
 
             //Prof Davis
