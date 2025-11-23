@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 64,
+            fontSize: 90,
             fontFamily: 'GrilledCheese',
             fontFamilyFallback: const ['Roboto'],
             fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 64,
+            fontSize: 90,
             fontFamily: 'GrilledCheese',
             fontFamilyFallback: ['Roboto'],
             fontWeight: FontWeight.bold,
@@ -74,8 +74,8 @@ class HomeScreen extends StatelessWidget {
             //Prof Davis
             Positioned(
               bottom:
-                  MediaQuery.of(context).size.height * 0.05, // % from bottom
-              left: MediaQuery.of(context).size.width * -0.02, // 2% from left
+                  MediaQuery.of(context).size.height * 0.1, // % from bottom
+              left: MediaQuery.of(context).size.width * 0.02, // % from left
               child: Container(
                 width:
                     MediaQuery.of(context).size.width *
