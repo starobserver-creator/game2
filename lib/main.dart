@@ -18,8 +18,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isPressed = false;
 
   Widget _outlinedTitleLine(String text) {
     return Stack(
@@ -118,8 +125,13 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
+
+                  GestureDetector(
+                    onTapDown: (_) {
+                      setState(() => _isPressed = true);
+                    },
+                    onTapUp: (_) {
+                      setState(() => _isPressed = false);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -127,7 +139,19 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text('Start Quiz'),
+                    onTapCancel: () {
+                      setState(() => _isPressed = false);
+                    },
+                    child: SizedBox(
+                      width: 160,
+                      height: 160,
+                      child: Image.asset(
+                        _isPressed
+                          ? 'assets/images/UI/bplay2.png'
+                          : 'assets/images/UI/bplay1.png',
+                        fit: BoxFit.contain,
+                      ),  
+                    ),
                   ),
                 ],
               ),

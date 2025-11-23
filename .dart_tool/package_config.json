@@ -3,61 +3,61 @@
   "packages": [
     {
       "name": "characters",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/characters-1.4.0",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "collection",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/collection-1.19.1",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "cupertino_icons",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.8",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/solo/Documents/flutter.nosync/packages/flutter",
+      "rootUri": "file:///C:/Users/jmail/source/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/flutter_lints-6.0.0",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-6.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "lints",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/lints-6.0.0",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/lints-6.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "material_color_utilities",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1",
       "packageUri": "lib/",
       "languageVersion": "2.17"
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/meta-1.16.0",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.17.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.5"
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/solo/Documents/flutter.nosync/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///C:/Users/jmail/source/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/solo/.pub-cache/hosted/pub.dev/vector_math-2.2.0",
+      "rootUri": "file:///C:/Users/jmail/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.2.0",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
@@ -69,8 +69,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.9.2",
-  "flutterRoot": "file:///Users/solo/Documents/flutter.nosync",
-  "flutterVersion": "3.35.6",
-  "pubCache": "file:///Users/solo/.pub-cache"
+  "generatorVersion": "3.10.1",
+  "flutterRoot": "file:///C:/Users/jmail/source/flutter",
+  "flutterVersion": "3.38.3",
+  "pubCache": "file:///C:/Users/jmail/AppData/Local/Pub/Cache"
 }
