@@ -49,7 +49,7 @@ jobs:
         run: flutter pub get
       
       - name: Build Flutter Web
-        run: flutter build web --release --base-href="/game2/"
+        run: flutter build web --release --base-href="/game2/" --wasm
       
       - name: Verify Build Output
         run: ls -la build/web/
