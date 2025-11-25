@@ -44,19 +44,21 @@ void main() {
         expect(find.text('Adventure!'), findsOneWidget);
       });
 
-      testWidgets('HomeScreen images have semantic labels',
+      testWidgets('HomeScreen decorative images are excluded from semantics',
           (WidgetTester tester) async {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
 
-        // Verify decorative images have proper semantics
-        final semanticsWithImageDescription = find.byWidgetPredicate(
+        // Verify decorative images are properly excluded from semantics
+        // This tests that decorative images don't interfere with screen readers
+        final semanticsWithExclude = find.byWidgetPredicate(
           (widget) =>
               widget is Semantics &&
-              widget.properties.image == true,
+              widget.properties.image == true &&
+              widget.excludeSemantics == true,
         );
-        // Decorative images should be marked as such
-        expect(semanticsWithImageDescription.evaluate().isNotEmpty, isTrue);
+        // Decorative images should be excluded from semantics tree
+        expect(semanticsWithExclude.evaluate().isNotEmpty, isTrue);
       });
     });
 
@@ -169,10 +171,19 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Tap an answer to reveal next button
-        final firstAnswer = find.byType(GestureDetector).first;
-        await tester.tap(firstAnswer);
-        await tester.pumpAndSettle();
+        // Find answer buttons by their semantic labels
+        final answerSemantics = find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.button == true &&
+              (widget.properties.label?.contains('Answer option') ?? false),
+        );
+
+        // Tap the first answer option to reveal next button
+        if (answerSemantics.evaluate().isNotEmpty) {
+          await tester.tap(answerSemantics.first);
+          await tester.pumpAndSettle();
+        }
 
         // Verify next button has semantic label
         final nextButtonSemantics = find.byWidgetPredicate(

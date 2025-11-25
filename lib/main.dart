@@ -180,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen>
             Positioned.fill(
               child: Semantics(
                 image: true,
-                label: 'Background image showing a green landscape',
                 excludeSemantics: true,
                 child: Image.asset(
                   'assets/images/UI/background.png',
@@ -198,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen>
               left: MediaQuery.of(context).size.width * 0.02,
               child: Semantics(
                 image: true,
-                label: 'Professor Davis Green character illustration',
                 excludeSemantics: true,
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.4,
@@ -221,7 +219,6 @@ class _HomeScreenState extends State<HomeScreen>
               right: 40,
               child: Semantics(
                 image: true,
-                label: 'Davis water tower illustration',
                 excludeSemantics: true,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.25,
