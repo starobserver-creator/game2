@@ -301,16 +301,20 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Progress indicator
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: LinearProgressIndicator(
-                        value: (currentQuestionIndex + 1) / questions.length,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+                    Semantics(
+                      label: 'Quiz progress: Question ${currentQuestionIndex + 1} of ${questions.length}',
+                      value: '${((currentQuestionIndex + 1) / questions.length * 100).round()}%',
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: LinearProgressIndicator(
+                          value: (currentQuestionIndex + 1) / questions.length,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -319,58 +323,64 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.quiz, color: Colors.green[600]),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Question ${currentQuestionIndex + 1}/${questions.length}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                        Semantics(
+                          label: 'Question ${currentQuestionIndex + 1} of ${questions.length}',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.quiz, color: Colors.green[600]),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Question ${currentQuestionIndex + 1}/${questions.length}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[700],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.green[600],
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.eco, color: Colors.white),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Score: $score',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                        Semantics(
+                          label: 'Score: $score points',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.green[600],
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.eco, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Score: $score',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -453,31 +463,40 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                     
                     // Next/Restart button
                     if (isAnswered)
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton.icon(
-                          onPressed: isQuizCompleted ? restartQuiz : nextQuestion,
-                          icon: Icon(
-                            isQuizCompleted ? Icons.refresh : Icons.arrow_forward,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            isQuizCompleted 
-                              ? 'Restart Quiz (Final Score: $score/${questions.length})' 
-                              : 'Next Question',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                      Semantics(
+                        button: true,
+                        label: isQuizCompleted 
+                          ? 'Restart Quiz. Your final score is $score out of ${questions.length}' 
+                          : 'Next Question',
+                        hint: isQuizCompleted
+                          ? 'Double tap to restart the quiz'
+                          : 'Double tap to go to the next question',
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          child: ElevatedButton.icon(
+                            onPressed: isQuizCompleted ? restartQuiz : nextQuestion,
+                            icon: Icon(
+                              isQuizCompleted ? Icons.refresh : Icons.arrow_forward,
                               color: Colors.white,
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isQuizCompleted ? Colors.orange[600] : Colors.green[600],
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                            label: Text(
+                              isQuizCompleted 
+                                ? 'Restart Quiz (Final Score: $score/${questions.length})' 
+                                : 'Next Question',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                            elevation: 8,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isQuizCompleted ? Colors.orange[600] : Colors.green[600],
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              elevation: 8,
+                            ),
                           ),
                         ),
                       ),
@@ -492,85 +511,90 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
             Positioned(
               bottom: 100,
               left: 20,
-              child: RepaintBoundary(
-                child: AnimatedBuilder(
-                  animation: _frogBounceAnimation,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, -_frogBounceAnimation.value),
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green[50],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.green[300]!, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Frog Character
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.green[200],
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.green[600]!, width: 2),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    '🐸',
-                                    style: TextStyle(fontSize: 30),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              
-                              // Speech Bubble
-                              Flexible(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    frogMessage,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.green[800],
-                                    ),
-                                  ),
-                                ),
+              child: Semantics(
+                liveRegion: true,
+                label: 'Professor Davis Green says: $frogMessage',
+                child: RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _frogBounceAnimation,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, -_frogBounceAnimation.value),
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.75,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.green[300]!, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
                             ],
                           ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Frog Character
+                                Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[200],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.green[600]!, width: 2),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      '🐸',
+                                      style: TextStyle(fontSize: 30),
+                                      semanticsLabel: 'Professor Davis Green frog mascot',
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                
+                                // Speech Bubble
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      frogMessage,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.green[800],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -611,47 +635,67 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       iconColor = Colors.blue[600]!;
       textColor = Colors.blue[800]!;
     }
+
+    // Build semantic hint based on state
+    String semanticHint;
+    if (isAnswered) {
+      if (isCorrect) {
+        semanticHint = 'Correct answer';
+      } else if (isSelected) {
+        semanticHint = 'Incorrect answer - you selected this';
+      } else {
+        semanticHint = 'Option ${index + 1}';
+      }
+    } else {
+      semanticHint = 'Double tap to select this answer';
+    }
     
-    return GestureDetector(
-      onTap: () => selectAnswer(index),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: buttonColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              questions[currentQuestionIndex].options[index].icon,
-              size: height * 0.3,
-              color: iconColor,
-            ),
-            SizedBox(height: height * 0.1),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: height * 0.05),
-              child: Text(
-                questions[currentQuestionIndex].options[index].text,
-                style: TextStyle(
-                  fontSize: (height * 0.12).clamp(10, 16),
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+    return Semantics(
+      button: true,
+      enabled: !isAnswered,
+      label: 'Answer option ${index + 1}: ${questions[currentQuestionIndex].options[index].text}',
+      hint: semanticHint,
+      child: GestureDetector(
+        onTap: () => selectAnswer(index),
+        child: Container(
+          height: height,
+          decoration: BoxDecoration(
+            color: buttonColor,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: borderColor, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                questions[currentQuestionIndex].options[index].icon,
+                size: height * 0.3,
+                color: iconColor,
+              ),
+              SizedBox(height: height * 0.1),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: height * 0.05),
+                child: Text(
+                  questions[currentQuestionIndex].options[index].text,
+                  style: TextStyle(
+                    fontSize: (height * 0.12).clamp(10, 16),
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

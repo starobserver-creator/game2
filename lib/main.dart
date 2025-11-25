@@ -178,11 +178,16 @@ class _HomeScreenState extends State<HomeScreen>
         child: Stack(
           children: [
             Positioned.fill(
-              child: Image.asset(
-                'assets/images/UI/background.png',
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
+              child: Semantics(
+                image: true,
+                label: 'Background image showing a green landscape',
+                excludeSemantics: true,
+                child: Image.asset(
+                  'assets/images/UI/background.png',
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
 
@@ -191,17 +196,22 @@ class _HomeScreenState extends State<HomeScreen>
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.1,
               left: MediaQuery.of(context).size.width * 0.02,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: MediaQuery.of(context).size.height * 0.4,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      'assets/images/ProfDavisGreen/davisarm.png',
+              child: Semantics(
+                image: true,
+                label: 'Professor Davis Green character illustration',
+                excludeSemantics: true,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        'assets/images/ProfDavisGreen/davisarm.png',
+                      ),
+                      fit: BoxFit.contain,
                     ),
-                    fit: BoxFit.contain,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
               ),
             ),
@@ -209,11 +219,16 @@ class _HomeScreenState extends State<HomeScreen>
             Positioned(
               top: 40,
               right: 40,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.25,
-                child: Image.asset(
-                  'assets/images/Objects/watertower.png',
-                  fit: BoxFit.contain,
+              child: Semantics(
+                image: true,
+                label: 'Davis water tower illustration',
+                excludeSemantics: true,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  child: Image.asset(
+                    'assets/images/Objects/watertower.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
@@ -227,30 +242,36 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
-                  GestureDetector(
-                    onTapDown: (_) {
-                      setState(() => _isPressed = true);
-                    },
-                    onTapUp: (_) {
-                      setState(() => _isPressed = false);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const QuizGame(),
+                  Semantics(
+                    button: true,
+                    label: 'Play Game - Start A Greener Davis Adventure',
+                    hint: 'Double tap to start the sustainability quiz game',
+                    child: GestureDetector(
+                      onTapDown: (_) {
+                        setState(() => _isPressed = true);
+                      },
+                      onTapUp: (_) {
+                        setState(() => _isPressed = false);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizGame(),
+                          ),
+                        );
+                      },
+                      onTapCancel: () {
+                        setState(() => _isPressed = false);
+                      },
+                      child: SizedBox(
+                        width: 160,
+                        height: 160,
+                        child: Image.asset(
+                          _isPressed
+                              ? 'assets/images/UI/bplay2.png'
+                              : 'assets/images/UI/bplay1.png',
+                          fit: BoxFit.contain,
+                          semanticLabel: 'Play button',
                         ),
-                      );
-                    },
-                    onTapCancel: () {
-                      setState(() => _isPressed = false);
-                    },
-                    child: SizedBox(
-                      width: 160,
-                      height: 160,
-                      child: Image.asset(
-                        _isPressed
-                            ? 'assets/images/UI/bplay2.png'
-                            : 'assets/images/UI/bplay1.png',
-                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
