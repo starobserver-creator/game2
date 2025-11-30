@@ -40,12 +40,21 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
     _cloudController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 16),
-    )
-      ..addListener(_updateClouds) // CHANGED: move clouds each tick
-      ..repeat();
+      duration: const Duration(seconds: 60),
+    )..addListener(_updateClouds);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final size = MediaQuery.of(context).size;
+      setState(() {
+        _screenWidth = size.width;
+        _screenHeight = size.height;
+        _initClouds();
+      });
+      _cloudController.repeat();
+    });
   }
 
   @override
@@ -54,15 +63,17 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  // CHANGED: create several clouds at random X/Y with varying speeds
+  // Initialize clouds in lanes at top of screen
   void _initClouds() {
+    if (_screenWidth == null || _screenHeight == null) return;
+
     final width = _screenWidth!;
     final height = _screenHeight!;
 
     final laneHeights = [
       height * 0.08,
-      height * 0.22,
-      height * 0.38,
+      height * 0.16,
+      height * 0.24,
     ];
 
     const int cloudCount = 8;
@@ -177,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: SizedBox.expand(
         child: Stack(
           children: [
+            // Background image (decorative, excluded from semantics)
             Positioned.fill(
               child: Semantics(
                 image: true,
@@ -190,8 +202,10 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
 
+            // Clouds
             _buildClouds(),
 
+            // Prof Davis arm, decorative only
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.1,
               left: MediaQuery.of(context).size.width * 0.02,
@@ -208,12 +222,12 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       fit: BoxFit.contain,
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                 ),
               ),
             ),
 
+            // Water tower, decorative
             Positioned(
               top: 40,
               right: 40,
@@ -230,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
 
+            // Title and Play button
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
