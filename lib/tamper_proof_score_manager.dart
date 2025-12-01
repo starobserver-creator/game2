@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'dart:math';
 
 class TamperProofScoreManager {
   static final TamperProofScoreManager _instance = TamperProofScoreManager._internal();
+  static final Map<String, String> _inMemoryStorage = {};
   
   factory TamperProofScoreManager() {
     return _instance;
@@ -16,6 +16,11 @@ class TamperProofScoreManager {
   static const String _saltKey = 'quiz_salt';
   static const int _tokenExpirySeconds = 86400; // 24 hours
   static const int _saltLength = 32;
+
+  /// Get storage - uses in-memory for web compatibility
+  Map<String, String> _getStorage() {
+    return _inMemoryStorage;
+  }
 
   /// Generate a random salt
   String _generateSalt() {
@@ -63,13 +68,14 @@ class TamperProofScoreManager {
 
   /// Get or create salt for this device
   String _getOrCreateSalt() {
-    String? existingSalt = html.window.localStorage[_saltKey];
+    final storage = _getStorage();
+    String? existingSalt = storage[_saltKey];
     if (existingSalt != null && existingSalt.isNotEmpty) {
       return existingSalt;
     }
 
     final newSalt = _generateSalt();
-    html.window.localStorage[_saltKey] = newSalt;
+    storage[_saltKey] = newSalt;
     return newSalt;
   }
 
@@ -80,12 +86,13 @@ class TamperProofScoreManager {
     required DateTime date,
   }) async {
     try {
+      final storage = _getStorage();
       final salt = _getOrCreateSalt();
       final nonce = _generateNonce(salt);
 
       // Read existing scores
       List<Map<String, dynamic>> scores = [];
-      final scoresJson = html.window.localStorage[_scoresKey];
+      final scoresJson = storage[_scoresKey];
       if (scoresJson != null && scoresJson.isNotEmpty) {
         final jsonData = jsonDecode(scoresJson) as List;
         scores = List<Map<String, dynamic>>.from(jsonData);
@@ -105,11 +112,11 @@ class TamperProofScoreManager {
 
       // Write scores to localStorage
       final scoresContent = jsonEncode(scores);
-      html.window.localStorage[_scoresKey] = scoresContent;
+      storage[_scoresKey] = scoresContent;
 
       // Calculate and save secure hash
       final hash = _calculateSecureHash(scoresContent, nonce, salt);
-      html.window.localStorage[_nonceKey] = hash;
+      storage[_nonceKey] = hash;
     } catch (e) {
       throw Exception('Failed to save score: $e');
     }
@@ -118,7 +125,8 @@ class TamperProofScoreManager {
   /// Get all scores with tamper validation
   Future<List<ScoreEntry>> getAllScores() async {
     try {
-      final scoresJson = html.window.localStorage[_scoresKey];
+      final storage = _getStorage();
+      final scoresJson = storage[_scoresKey];
       final salt = _getOrCreateSalt();
 
       // Check if data exists
@@ -127,7 +135,7 @@ class TamperProofScoreManager {
       }
 
       // Verify tamper-proof token
-      final storedHash = html.window.localStorage[_nonceKey];
+      final storedHash = storage[_nonceKey];
       if (storedHash != null && storedHash.isNotEmpty) {
         // Get last nonce from scores if available
         final jsonData = jsonDecode(scoresJson) as List;
@@ -175,6 +183,7 @@ class TamperProofScoreManager {
   /// Delete a specific score
   Future<void> deleteScore(int id) async {
     try {
+      final storage = _getStorage();
       final salt = _getOrCreateSalt();
       final nonce = _generateNonce(salt);
 
@@ -194,11 +203,11 @@ class TamperProofScoreManager {
           .toList();
 
       final scoresContent = jsonEncode(updatedScores);
-      html.window.localStorage[_scoresKey] = scoresContent;
+      storage[_scoresKey] = scoresContent;
 
       // Update secure hash
       final hash = _calculateSecureHash(scoresContent, nonce, salt);
-      html.window.localStorage[_nonceKey] = hash;
+      storage[_nonceKey] = hash;
     } catch (e) {
       throw Exception('Failed to delete score: $e');
     }
@@ -207,8 +216,9 @@ class TamperProofScoreManager {
   /// Clear all scores
   Future<void> clearAllScores() async {
     try {
-      html.window.localStorage.remove(_scoresKey);
-      html.window.localStorage.remove(_nonceKey);
+      final storage = _getStorage();
+      storage.remove(_scoresKey);
+      storage.remove(_nonceKey);
       // Keep salt for device identification
     } catch (e) {
       throw Exception('Failed to clear scores: $e');
