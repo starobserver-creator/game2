@@ -256,6 +256,10 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 24),
                   Semantics(
                     button: true,
+                    // Provide an explicit onTap so accessibility services
+                    // treat this as an actionable control even if the
+                    // underlying GestureDetector handles taps.
+                    onTap: () {},
                     label: 'Play Game - Start A Greener Davis Adventure',
                     hint: 'Double tap to start the sustainability quiz game',
                     child: GestureDetector(
