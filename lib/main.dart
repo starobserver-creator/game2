@@ -151,15 +151,18 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         const SizedBox.shrink(),
-        Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 90,
-            fontFamily: 'GrilledCheese',
-            fontFamilyFallback: ['Roboto'],
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 16, 0, 134),
+        Semantics(
+          enabled: false,
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 90,
+              fontFamily: 'GrilledCheese',
+              fontFamilyFallback: ['Roboto'],
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 16, 0, 134),
+            ),
           ),
         ),
       ],
@@ -222,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Image.asset(
                   'assets/images/Objects/watertower.png',
                   fit: BoxFit.contain,
+                  excludeFromSemantics: true,
                 ),
               ),
             ),
@@ -231,14 +235,19 @@ class _HomeScreenState extends State<HomeScreen>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Semantics(
+                    enabled: false,
+                    label: 'Home Screen – A Greener Davis Adventure',
+                    child: const SizedBox.shrink(),
+                  ),
                   _outlinedTitleLine('A Greener Davis'),
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
                   Semantics(
-                    label: 'Play Quiz',
+                    label: 'Start quiz',
                     button: true,
-                    hint: 'Starts the sustainability quiz',
+                    hint: 'Begin the 13 question Davis sustainability quiz. Press Enter or Space to start.',
                     child: FocusableActionDetector(
                       shortcuts: const <ShortcutActivator, Intent>{
                         SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
@@ -295,10 +304,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   const SizedBox(height: 24),
                   Semantics(
-                    container: true,
-                    label: 'View Scoreboard',
                     button: true,
-                    hint: 'Opens the scoreboard screen',
+                    label: 'View scoreboard',
+                    hint: 'See your past quiz scores.',
                     child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.push(
