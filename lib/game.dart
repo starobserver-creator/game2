@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'tamper_proof_score_manager.dart';
 import 'end_screen.dart';
 
@@ -637,46 +638,68 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       textColor = Colors.blue[800]!;
     }
     
-    return GestureDetector(
-      onTap: () => selectAnswer(index),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: buttonColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              questions[currentQuestionIndex].options[index].icon,
-              size: height * 0.3,
-              color: iconColor,
-            ),
-            SizedBox(height: height * 0.1),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: height * 0.05),
-              child: Text(
-                questions[currentQuestionIndex].options[index].text,
-                style: TextStyle(
-                  fontSize: (height * 0.12).clamp(10, 16),
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+    final optionText = questions[currentQuestionIndex].options[index].text;
+
+    return Semantics(
+      label: optionText,
+      button: true,
+      hint: 'Answer option ${index + 1}',
+      child: FocusableActionDetector(
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (intent) {
+              // Keep existing game logic: selecting the answer
+              selectAnswer(index);
+              return null;
+            },
+          ),
+        },
+        child: GestureDetector(
+          onTap: () => selectAnswer(index),
+          child: Container(
+            height: height,
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: borderColor, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
             ),
-          ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  questions[currentQuestionIndex].options[index].icon,
+                  size: height * 0.3,
+                  color: iconColor,
+                ),
+                SizedBox(height: height * 0.1),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: height * 0.05),
+                  child: Text(
+                    optionText,
+                    style: TextStyle(
+                      fontSize: (height * 0.12).clamp(10, 16),
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
