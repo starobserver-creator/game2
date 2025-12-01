@@ -109,120 +109,141 @@ class _EndScreenState extends State<EndScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Celebration emoji
-                    const Text(
-                      '🎉',
-                      style: TextStyle(fontSize: 80),
+                    // Celebration emoji (decorative)
+                    Semantics(
+                      container: true,
+                      excludeSemantics: true,
+                      child: const Text(
+                        '🎉',
+                        style: TextStyle(fontSize: 80),
+                      ),
                     ),
                     const SizedBox(height: 24),
 
                     // Thank you message
-                    const Text(
-                      'Thanks for Playing!',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 16, 0, 134),
+                    Semantics(
+                      enabled: false,
+                      label: 'Thanks for Playing!',
+                      child: const Text(
+                        'Thanks for Playing!',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 16, 0, 134),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
 
                     // Congratulations message
-                    Text(
-                      'You\'re helping save our planet! 🌍',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w600,
+                    Semantics(
+                      enabled: false,
+                      label: 'You\'re helping save our planet!',
+                      child: Text(
+                        'You\'re helping save our planet! 🌍',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
 
-                    // Score display
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Final Score',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
+                    // Score display with accessible semantics
+                    Semantics(
+                      container: true,
+                      label:
+                          'Final Score: ${widget.score} out of ${widget.totalQuestions}. ${widget.percentage.toStringAsFixed(1)} percent.',
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${widget.score}',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[600],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '/ ${widget.totalQuestions}',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getPercentageColor(widget.percentage)
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${widget.percentage.toStringAsFixed(1)}%',
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Final Score',
                               style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: _getPercentageColor(widget.percentage),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${widget.score}',
+                                  style: TextStyle(
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[600],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '/ ${widget.totalQuestions}',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getPercentageColor(widget.percentage)
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '${widget.percentage.toStringAsFixed(1)}%',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: _getPercentageColor(widget.percentage),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
 
                     // Motivational message
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        _getMotivationalMessage(widget.percentage),
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[700],
-                          fontStyle: FontStyle.italic,
+                    Semantics(
+                      enabled: false,
+                      label: _getMotivationalMessage(widget.percentage),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          _getMotivationalMessage(widget.percentage),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -231,55 +252,65 @@ class _EndScreenState extends State<EndScreen>
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => const HomeScreen(),
+                        Semantics(
+                          button: true,
+                          label: 'Home',
+                          hint: 'Return to the title screen.',
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => const HomeScreen(),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                            icon: const Icon(Icons.home, color: Colors.white),
+                            label: const Text(
+                              'Home',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                              (route) => false,
-                            );
-                          },
-                          icon: const Icon(Icons.home, color: Colors.white),
-                          label: const Text(
-                            'Home',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green[600],
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[600],
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 16),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.refresh, color: Colors.white),
-                          label: const Text(
-                            'Try Again',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                        Semantics(
+                          button: true,
+                          label: 'Play again',
+                          hint: 'Restart the quiz from question 1.',
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.refresh, color: Colors.white),
+                            label: const Text(
+                              'Play again',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[600],
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),

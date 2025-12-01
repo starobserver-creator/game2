@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/semantics.dart';
 import 'tamper_proof_score_manager.dart';
 import 'end_screen.dart';
 
@@ -271,6 +273,12 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       }
     });
 
+    // Announce the frog message to screen readers
+    SemanticsService.announce(
+      frogMessage,
+      TextDirection.ltr,
+    );
+
     // Hide frog after 2.5 seconds instead of 3 for faster feedback
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
@@ -289,6 +297,15 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: Semantics(
+          button: true,
+          label: 'Back to home screen',
+          hint: 'Leave this quiz and return to the title screen. Your current quiz progress will be lost.',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -311,17 +328,44 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Progress indicator
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                    // Keyboard instruction
+                    Semantics(
+                      enabled: false,
+                      label: 'Keyboard instructions: Use Tab and Shift+Tab to move between options, and Enter or Space to select.',
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blue[200]!, width: 1),
+                        ),
+                        child: Text(
+                          'Use Tab and Shift+Tab to move between options, and Enter or Space to select.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue[700],
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      child: LinearProgressIndicator(
-                        value: (currentQuestionIndex + 1) / questions.length,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+                    ),
+                    const SizedBox(height: 16),
+                    // Progress indicator
+                    Semantics(
+                      enabled: false,
+                      label: 'Progress: Question ${currentQuestionIndex + 1} of ${questions.length}',
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: LinearProgressIndicator(
+                          value: (currentQuestionIndex + 1) / questions.length,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -330,58 +374,66 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.quiz, color: Colors.green[600]),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Question ${currentQuestionIndex + 1}/${questions.length}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                        Semantics(
+                          container: true,
+                          label: 'Question ${currentQuestionIndex + 1} of ${questions.length}',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.quiz, color: Colors.green[600]),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Question ${currentQuestionIndex + 1}/${questions.length}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[700],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.green[600],
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.eco, color: Colors.white),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Score: $score',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                        Semantics(
+                          container: true,
+                          label: 'Current score: $score correct',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.green[600],
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.eco, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Score: $score',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -410,14 +462,18 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                             color: Colors.green[600],
                           ),
                           const SizedBox(height: 16),
-                          Text(
-                            questions[currentQuestionIndex].questionText,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
+                          Semantics(
+                            enabled: false,
+                            label: questions[currentQuestionIndex].questionText,
+                            child: Text(
+                              questions[currentQuestionIndex].questionText,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -464,45 +520,52 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                     
                     // Next/Restart button
                     if (isAnswered)
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton.icon(
-                          onPressed: isQuizCompleted
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EndScreen(
-                                        score: score,
-                                        totalQuestions: questions.length,
-                                        percentage:
-                                            (score / questions.length * 100),
+                      Semantics(
+                        button: true,
+                        label: isQuizCompleted ? 'See results' : 'Next question',
+                        hint: isQuizCompleted
+                            ? 'Show your final score and feedback.'
+                            : 'After choosing an answer, press Enter or Space to go to the next question.',
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          child: ElevatedButton.icon(
+                            onPressed: isQuizCompleted
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EndScreen(
+                                          score: score,
+                                          totalQuestions: questions.length,
+                                          percentage:
+                                              (score / questions.length * 100),
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
-                              : nextQuestion,
-                          icon: Icon(
-                            isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            isQuizCompleted 
-                              ? 'See Results' 
-                              : 'Next Question',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                                    );
+                                  }
+                                : nextQuestion,
+                            icon: Icon(
+                              isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
                               color: Colors.white,
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                            label: Text(
+                              isQuizCompleted 
+                                ? 'See Results' 
+                                : 'Next Question',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                            elevation: 8,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              elevation: 8,
+                            ),
                           ),
                         ),
                       ),
@@ -637,46 +700,67 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       textColor = Colors.blue[800]!;
     }
     
-    return GestureDetector(
-      onTap: () => selectAnswer(index),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: buttonColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              questions[currentQuestionIndex].options[index].icon,
-              size: height * 0.3,
-              color: iconColor,
-            ),
-            SizedBox(height: height * 0.1),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: height * 0.05),
-              child: Text(
-                questions[currentQuestionIndex].options[index].text,
-                style: TextStyle(
-                  fontSize: (height * 0.12).clamp(10, 16),
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+    final optionText = questions[currentQuestionIndex].options[index].text;
+
+    return Semantics(
+      label: optionText,
+      button: true,
+      hint: 'Answer option ${index + 1} of ${questions[currentQuestionIndex].options.length}. Press Enter or Space to choose this answer.',
+      child: FocusableActionDetector(
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (intent) {
+              selectAnswer(index);
+              return null;
+            },
+          ),
+        },
+        child: GestureDetector(
+          onTap: () => selectAnswer(index),
+          child: Container(
+            height: height,
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: borderColor, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
             ),
-          ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  questions[currentQuestionIndex].options[index].icon,
+                  size: height * 0.3,
+                  color: iconColor,
+                ),
+                SizedBox(height: height * 0.1),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: height * 0.05),
+                  child: Text(
+                    optionText,
+                    style: TextStyle(
+                      fontSize: (height * 0.12).clamp(10, 16),
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

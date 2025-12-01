@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'game.dart';
 import 'scoreboard.dart';
 
@@ -122,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Image.asset(
                   c.asset,
                   fit: BoxFit.contain,
+                  excludeFromSemantics: true,
                 ),
               ),
             ),
@@ -149,15 +151,18 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         const SizedBox.shrink(),
-        Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 90,
-            fontFamily: 'GrilledCheese',
-            fontFamilyFallback: ['Roboto'],
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 16, 0, 134),
+        Semantics(
+          enabled: false,
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 90,
+              fontFamily: 'GrilledCheese',
+              fontFamilyFallback: ['Roboto'],
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 16, 0, 134),
+            ),
           ),
         ),
       ],
@@ -184,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen>
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
+                excludeFromSemantics: true,
               ),
             ),
 
@@ -192,17 +198,21 @@ class _HomeScreenState extends State<HomeScreen>
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.1,
               left: MediaQuery.of(context).size.width * 0.02,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: MediaQuery.of(context).size.height * 0.4,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      'assets/images/ProfDavisGreen/davisarm.png',
+              child: Semantics(
+                container: true,
+                excludeSemantics: true,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        'assets/images/ProfDavisGreen/davisarm.png',
+                      ),
+                      fit: BoxFit.contain,
                     ),
-                    fit: BoxFit.contain,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
               ),
             ),
@@ -215,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Image.asset(
                   'assets/images/Objects/watertower.png',
                   fit: BoxFit.contain,
+                  excludeFromSemantics: true,
                 ),
               ),
             ),
@@ -224,64 +235,105 @@ class _HomeScreenState extends State<HomeScreen>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Semantics(
+                    enabled: false,
+                    label: 'Home Screen – A Greener Davis Adventure',
+                    child: const SizedBox.shrink(),
+                  ),
                   _outlinedTitleLine('A Greener Davis'),
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
-                  GestureDetector(
-                    onTapDown: (_) {
-                      setState(() => _isPressed = true);
-                    },
-                    onTapUp: (_) {
-                      setState(() => _isPressed = false);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const QuizGame(),
+                  Semantics(
+                    label: 'Start quiz',
+                    button: true,
+                    hint: 'Begin the 13 question Davis sustainability quiz. Press Enter or Space to start.',
+                    child: FocusableActionDetector(
+                      shortcuts: const <ShortcutActivator, Intent>{
+                        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+                      },
+                      actions: <Type, Action<Intent>>{
+                        ActivateIntent: CallbackAction<ActivateIntent>(
+                          onInvoke: (intent) {
+                            setState(() => _isPressed = true);
+                            Future.delayed(const Duration(milliseconds: 100), () {
+                              if (mounted) {
+                                setState(() => _isPressed = false);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const QuizGame(),
+                                  ),
+                                );
+                              }
+                            });
+                            return null;
+                          },
                         ),
-                      );
-                    },
-                    onTapCancel: () {
-                      setState(() => _isPressed = false);
-                    },
-                    child: SizedBox(
-                      width: 160,
-                      height: 160,
-                      child: Image.asset(
-                        _isPressed
-                            ? 'assets/images/UI/bplay2.png'
-                            : 'assets/images/UI/bplay1.png',
-                        fit: BoxFit.contain,
+                      },
+                      child: GestureDetector(
+                        onTapDown: (_) {
+                          setState(() => _isPressed = true);
+                        },
+                        onTapUp: (_) {
+                          setState(() => _isPressed = false);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const QuizGame(),
+                            ),
+                          );
+                        },
+                        onTapCancel: () {
+                          setState(() => _isPressed = false);
+                        },
+                        child: SizedBox(
+                          width: 160,
+                          height: 160,
+                          child: Image.asset(
+                            _isPressed
+                                ? 'assets/images/UI/bplay2.png'
+                                : 'assets/images/UI/bplay1.png',
+                            fit: BoxFit.contain,
+                            semanticLabel: 'Play button image',
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ScoreboardScreen(),
+                  Semantics(
+                    button: true,
+                    label: 'View scoreboard',
+                    hint: 'See your past quiz scores.',
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ScoreboardScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.bar_chart, color: Colors.white),
+                      label: const Text(
+                        'View Scoreboard',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.bar_chart, color: Colors.white),
-                    label: const Text(
-                      'View Scoreboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
