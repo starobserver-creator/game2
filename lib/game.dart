@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'tamper_proof_score_manager.dart';
+import 'end_screen.dart';
 
 class QuizGame extends StatefulWidget {
   const QuizGame({super.key});
@@ -18,6 +20,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   String frogMessage = "Hi! I'm Professor Davis Green! 🐸 Ready to learn about sustainability?";
   late AnimationController _frogAnimationController;
   late Animation<double> _frogBounceAnimation;
+  late TamperProofScoreManager _scoreManager;
 
   final List<Question> questions = [
     // Stormwater
@@ -186,6 +189,13 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   }
 
   void restartQuiz() {
+    // Save score to file with checksum validation
+    _scoreManager.saveScore(
+      score: score,
+      totalQuestions: questions.length,
+      date: DateTime.now(),
+    );
+
     setState(() {
       currentQuestionIndex = 0;
       score = 0;
@@ -199,6 +209,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _scoreManager = TamperProofScoreManager();
     _initializeFrogAnimation();
     _showWelcomeMessage();
   }
@@ -456,14 +467,28 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                       Container(
                         margin: const EdgeInsets.only(top: 20),
                         child: ElevatedButton.icon(
-                          onPressed: isQuizCompleted ? restartQuiz : nextQuestion,
+                          onPressed: isQuizCompleted
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EndScreen(
+                                        score: score,
+                                        totalQuestions: questions.length,
+                                        percentage:
+                                            (score / questions.length * 100),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              : nextQuestion,
                           icon: Icon(
-                            isQuizCompleted ? Icons.refresh : Icons.arrow_forward,
+                            isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
                             color: Colors.white,
                           ),
                           label: Text(
                             isQuizCompleted 
-                              ? 'Restart Quiz (Final Score: $score/${questions.length})' 
+                              ? 'See Results' 
                               : 'Next Question',
                             style: const TextStyle(
                               fontSize: 18,
@@ -472,7 +497,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isQuizCompleted ? Colors.orange[600] : Colors.green[600],
+                            backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),

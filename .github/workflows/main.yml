@@ -50,6 +50,8 @@ jobs:
       
       - name: Build Flutter Web
         run: flutter build web --release --base-href="/game2/" --wasm
+        env:
+          DB_ENCRYPTION_KEY: ${{ secrets.DB_ENCRYPTION_KEY }}
       
       - name: Verify Build Output
         run: ls -la build/web/

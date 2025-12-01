@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'game.dart';
+import 'scoreboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -251,6 +252,36 @@ class _HomeScreenState extends State<HomeScreen>
                             ? 'assets/images/UI/bplay2.png'
                             : 'assets/images/UI/bplay1.png',
                         fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ScoreboardScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.bar_chart, color: Colors.white),
+                    label: const Text(
+                      'View Scoreboard',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
