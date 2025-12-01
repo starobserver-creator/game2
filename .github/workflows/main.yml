@@ -48,10 +48,15 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
       
-      - name: Build Flutter Web
-        run: flutter build web --release --base-href="/game2/" --wasm
+      - name: Create .env File
         env:
           DB_ENCRYPTION_KEY: ${{ secrets.DB_ENCRYPTION_KEY }}
+        run: |
+          echo "DB_ENCRYPTION_KEY=${DB_ENCRYPTION_KEY}" > .env
+          cat .env
+      
+      - name: Build Flutter Web
+        run: flutter build web --release --base-href="/game2/" --wasm
       
       - name: Verify Build Output
         run: ls -la build/web/
