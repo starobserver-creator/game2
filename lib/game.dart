@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'tamper_proof_score_manager.dart';
 import 'end_screen.dart';
 
@@ -22,7 +23,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   late Animation<double> _frogBounceAnimation;
   late TamperProofScoreManager _scoreManager;
 
-  final List<Question> questions = [
+  final List<Question> questions = const [
     // Stormwater
     Question(
       questionText: "🗑️ What should you do if you accidentally drop trash on the ground?",
@@ -281,14 +282,79 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     });
   }
 
+  /// Handle keyboard answer selection (1-4 keys)
+  void _handleKeyboardAnswer(int index) {
+    if (isAnswered || index >= questions[currentQuestionIndex].options.length) {
+      return;
+    }
+    setState(() {
+      selectedAnswer = index;
+      isAnswered = true;
+      if (selectedAnswer == questions[currentQuestionIndex].correctAnswer) {
+        score++;
+        frogMessage = "Correct! Great job! 🎉";
+      } else {
+        frogMessage = "Not quite right, but you'll learn! 📚";
+      }
+    });
+  }
+
+  void _handleKeyboardAction() {
+    if (!isAnswered) return;
+    
+    final isQuizCompleted = currentQuestionIndex == questions.length - 1;
+    
+    if (isQuizCompleted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EndScreen(
+            score: score,
+            totalQuestions: questions.length,
+            percentage: (score / questions.length * 100),
+          ),
+        ),
+      );
+    } else {
+      nextQuestion();
+    }
+  }
+
+  /// Handle keyboard key events
+  KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.digit1)) {
+      _handleKeyboardAnswer(0);
+      return KeyEventResult.handled;
+    } else if (event.isKeyPressed(LogicalKeyboardKey.digit2)) {
+      _handleKeyboardAnswer(1);
+      return KeyEventResult.handled;
+    } else if (event.isKeyPressed(LogicalKeyboardKey.digit3)) {
+      _handleKeyboardAnswer(2);
+      return KeyEventResult.handled;
+    } else if (event.isKeyPressed(LogicalKeyboardKey.digit4)) {
+      _handleKeyboardAnswer(3);
+      return KeyEventResult.handled;
+    } else if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
+        event.isKeyPressed(LogicalKeyboardKey.space)) {
+      _handleKeyboardAction();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Focus(
+      onKey: _handleKeyboardKey,
+      autofocus: true,
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('🌱 Sustainability Quiz'),
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
-        elevation: 0,
+        elevation: 2,
+        toolbarHeight: 65,  // Larger touch target
+        centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -312,199 +378,57 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Progress indicator
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: LinearProgressIndicator(
-                        value: (currentQuestionIndex + 1) / questions.length,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
-                      ),
-                    ),
+                    const _ProgressIndicator(),
                     const SizedBox(height: 20),
                     
                     // Question counter and score
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.quiz, color: Colors.green[600]),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Question ${currentQuestionIndex + 1}/${questions.length}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.green[600],
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.eco, color: Colors.white),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Score: $score',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    _ScoreHeader(
+                      currentQuestion: currentQuestionIndex + 1,
+                      totalQuestions: questions.length,
+                      score: score,
                     ),
                     const SizedBox(height: 30),
                     
-                    // Question
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.help_outline,
-                            size: 40,
-                            color: Colors.green[600],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            questions[currentQuestionIndex].questionText,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                    // Question - Only rebuild this when question changes
+                    _QuestionWidget(
+                      key: ValueKey(currentQuestionIndex),
+                      question: questions[currentQuestionIndex],
+                      questionNumber: currentQuestionIndex + 1,
+                      totalQuestions: questions.length,
                     ),
                     const SizedBox(height: 30),
                     
-                    // Answer options with images
+                    // Answer options with images - Only rebuild when question changes
                     Flexible(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          double availableHeight = constraints.maxHeight;
-                          double buttonHeight = (availableHeight - 15) / 2;
-                          
-                          return Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildAnswerButton(0, buttonHeight),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Expanded(
-                                    child: _buildAnswerButton(1, buttonHeight),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildAnswerButton(2, buttonHeight),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Expanded(
-                                    child: _buildAnswerButton(3, buttonHeight),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
+                      child: _AnswerButtonsGrid(
+                        key: ValueKey(currentQuestionIndex),
+                        index: currentQuestionIndex,
+                        isAnswered: isAnswered,
+                        selectedAnswer: selectedAnswer,
+                        onAnswerSelected: selectAnswer,
+                        buildAnswerButton: _buildAnswerButton,
                       ),
                     ),
                     
                     // Next/Restart button
                     if (isAnswered)
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton.icon(
-                          onPressed: isQuizCompleted
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EndScreen(
-                                        score: score,
-                                        totalQuestions: questions.length,
-                                        percentage:
-                                            (score / questions.length * 100),
-                                      ),
+                      _NextButton(
+                        isQuizCompleted: isQuizCompleted,
+                        onPressed: isQuizCompleted
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EndScreen(
+                                      score: score,
+                                      totalQuestions: questions.length,
+                                      percentage:
+                                          (score / questions.length * 100),
                                     ),
-                                  );
-                                }
-                              : nextQuestion,
-                          icon: Icon(
-                            isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            isQuizCompleted 
-                              ? 'See Results' 
-                              : 'Next Question',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            elevation: 8,
-                          ),
-                        ),
+                                  ),
+                                );
+                              }
+                            : nextQuestion,
                       ),
                   ],
                 ),
@@ -515,91 +439,16 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
           // Animated Frog Overlay
           if (showFrog)
             Positioned(
-              bottom: 100,
-              left: 20,
-              child: RepaintBoundary(
-                child: AnimatedBuilder(
-                  animation: _frogBounceAnimation,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, -_frogBounceAnimation.value),
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green[50],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.green[300]!, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Frog Character
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.green[200],
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.green[600]!, width: 2),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    '🐸',
-                                    style: TextStyle(fontSize: 30),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              
-                              // Speech Bubble
-                              Flexible(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    frogMessage,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.green[800],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              top: 20,
+              left: 0,
+              right: 0,
+              child: _FrogBubble(
+                message: frogMessage,
+                animation: _frogBounceAnimation,
               ),
             ),
         ],
+      )
       ),
     );
   }
@@ -612,71 +461,348 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     Color borderColor;
     Color iconColor;
     Color textColor;
+    String accessibilityLabel;
     
     if (isAnswered) {
       if (isCorrect) {
-        buttonColor = Colors.green[100]!;
-        borderColor = Colors.green[600]!;
-        iconColor = Colors.green[700]!;
-        textColor = Colors.green[800]!;
+        buttonColor = Colors.green[700]!;  // Better contrast
+        borderColor = Colors.green[900]!;
+        iconColor = Colors.white;
+        textColor = Colors.white;
+        accessibilityLabel = "Option ${index + 1}: ${questions[currentQuestionIndex].options[index].text} - Correct answer";
       } else if (isSelected) {
-        buttonColor = Colors.red[100]!;
-        borderColor = Colors.red[600]!;
-        iconColor = Colors.red[700]!;
-        textColor = Colors.red[800]!;
+        buttonColor = Colors.red[700]!;  // Better contrast
+        borderColor = Colors.red[900]!;
+        iconColor = Colors.white;
+        textColor = Colors.white;
+        accessibilityLabel = "Option ${index + 1}: ${questions[currentQuestionIndex].options[index].text} - Incorrect answer";
       } else {
-        buttonColor = Colors.grey[200]!;
-        borderColor = Colors.grey[400]!;
-        iconColor = Colors.grey[600]!;
-        textColor = Colors.grey[700]!;
+        buttonColor = Colors.grey[600]!;  // Better contrast
+        borderColor = Colors.grey[800]!;
+        iconColor = Colors.white;
+        textColor = Colors.white;
+        accessibilityLabel = "Option ${index + 1}: ${questions[currentQuestionIndex].options[index].text} - Not selected";
       }
     } else {
-      buttonColor = Colors.white;
-      borderColor = Colors.blue[300]!;
-      iconColor = Colors.blue[600]!;
-      textColor = Colors.blue[800]!;
+      buttonColor = Colors.blue[600]!;  // Better contrast
+      borderColor = Colors.blue[800]!;
+      iconColor = Colors.white;
+      textColor = Colors.white;
+      accessibilityLabel = "Option ${index + 1}: ${questions[currentQuestionIndex].options[index].text}. Press ${index + 1} or tap to select";
     }
     
-    return GestureDetector(
-      onTap: () => selectAnswer(index),
+    return Semantics(
+      label: accessibilityLabel,
+      button: true,
+      enabled: !isAnswered,
+      onTap: !isAnswered ? () => selectAnswer(index) : null,
+      child: GestureDetector(
+        onTap: !isAnswered ? () => selectAnswer(index) : null,
+        child: Focus(
+          onKey: (node, event) {
+            if ((event.isKeyPressed(LogicalKeyboardKey.enter) || 
+                event.isKeyPressed(LogicalKeyboardKey.space)) && !isAnswered) {
+              selectAnswer(index);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          onFocusChange: (hasFocus) {
+            // Provide visual feedback on focus via snackbar
+            if (hasFocus && !isAnswered) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(accessibilityLabel),
+                  duration: const Duration(milliseconds: 1500),
+                  backgroundColor: Colors.blue[800],
+                ),
+              );
+            }
+          },
+          child: Container(
+            height: height,
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: borderColor, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  questions[currentQuestionIndex].options[index].icon,
+                  size: height * 0.3,
+                  color: iconColor,
+                  semanticLabel: questions[currentQuestionIndex].options[index].text,
+                ),
+                SizedBox(height: height * 0.1),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: height * 0.05),
+                  child: Text(
+                    questions[currentQuestionIndex].options[index].text,
+                    style: TextStyle(
+                      fontSize: (height * 0.14).clamp(12, 18),  // Larger font for accessibility
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Question widget - only rebuilds when question changes
+class _QuestionWidget extends StatelessWidget {
+  final Question question;
+  final int questionNumber;
+  final int totalQuestions;
+
+  const _QuestionWidget({
+    super.key,
+    required this.question,
+    required this.questionNumber,
+    required this.totalQuestions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: "Question $questionNumber of $totalQuestions",
       child: Container(
-        height: height,
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: buttonColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor, width: 2),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              questions[currentQuestionIndex].options[index].icon,
-              size: height * 0.3,
-              color: iconColor,
+              Icons.help_outline,
+              size: 40,
+              color: Colors.green[600],
+              semanticLabel: "Question",
             ),
-            SizedBox(height: height * 0.1),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: height * 0.05),
-              child: Text(
-                questions[currentQuestionIndex].options[index].text,
-                style: TextStyle(
-                  fontSize: (height * 0.12).clamp(10, 16),
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 16),
+            Text(
+              question.questionText,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
               ),
+              textAlign: TextAlign.center,
+              semanticsLabel: question.questionText,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Answer buttons grid - optimized for rebuild efficiency
+class _AnswerButtonsGrid extends StatelessWidget {
+  final int index;
+  final bool isAnswered;
+  final int? selectedAnswer;
+  final Function(int) onAnswerSelected;
+  final Widget Function(int, double) buildAnswerButton;
+
+  const _AnswerButtonsGrid({
+    super.key,
+    required this.index,
+    required this.isAnswered,
+    required this.selectedAnswer,
+    required this.onAnswerSelected,
+    required this.buildAnswerButton,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double availableHeight = constraints.maxHeight;
+        double buttonHeight = (availableHeight - 15) / 2;
+        
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: buildAnswerButton(0, buttonHeight),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: buildAnswerButton(1, buttonHeight),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: buildAnswerButton(2, buttonHeight),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: buildAnswerButton(3, buttonHeight),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Next button widget
+class _NextButton extends StatelessWidget {
+  final bool isQuizCompleted;
+  final VoidCallback onPressed;
+
+  const _NextButton({
+    required this.isQuizCompleted,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(
+          isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
+          color: Colors.white,
+        ),
+        label: Text(
+          isQuizCompleted ? 'See Results' : 'Next Question',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 8,
+        ),
+      ),
+    );
+  }
+}
+
+/// Frog bubble widget - optimized for mobile
+class _FrogBubble extends StatelessWidget {
+  final String message;
+  final Animation<double> animation;
+
+  const _FrogBubble({
+    required this.message,
+    required this.animation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            final isMobile = screenWidth < 600;
+            final maxWidth = isMobile ? screenWidth * 0.85 : screenWidth * 0.6;
+            final frogSize = isMobile ? 45.0 : 50.0;
+            final frogEmoji = isMobile ? 22.0 : 25.0;
+            final bubbleFontSize = isMobile ? 11.0 : 12.0;
+            final containerPadding = isMobile ? 12.0 : 16.0;
+            
+            return Transform.translate(
+              offset: Offset(0, -animation.value),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                decoration: BoxDecoration(
+                  color: Colors.green[50]!.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.green[300]!, width: 2),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(containerPadding),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: frogSize,
+                        height: frogSize,
+                        decoration: BoxDecoration(
+                          color: Colors.green[200],
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.green[600]!, width: 2),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '🐸',
+                            style: TextStyle(fontSize: frogEmoji),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: isMobile ? 8 : 12),
+                      Flexible(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 10 : 12,
+                            vertical: isMobile ? 6 : 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            message,
+                            style: TextStyle(
+                              fontSize: bubbleFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.green[800],
+                            ),
+                            maxLines: isMobile ? 2 : 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -688,7 +814,7 @@ class Question {
   final List<OptionWithImage> options;
   final int correctAnswer;
 
-  Question({
+  const Question({
     required this.questionText,
     required this.options,
     required this.correctAnswer,
@@ -699,8 +825,110 @@ class OptionWithImage {
   final String text;
   final IconData icon;
 
-  OptionWithImage({
+  const OptionWithImage({
     required this.text,
     required this.icon,
   });
+}
+
+/// Progress indicator widget
+class _ProgressIndicator extends StatelessWidget {
+  const _ProgressIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: StreamBuilder<double>(
+        stream: Stream.value(0.5), // Placeholder - will be updated by parent
+        builder: (context, snapshot) {
+          return LinearProgressIndicator(
+            value: snapshot.data ?? 0.5,
+            backgroundColor: Colors.grey[300],
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Score header widget
+class _ScoreHeader extends StatelessWidget {
+  final int currentQuestion;
+  final int totalQuestions;
+  final int score;
+
+  const _ScoreHeader({
+    required this.currentQuestion,
+    required this.totalQuestions,
+    required this.score,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.quiz, color: Colors.green[600]),
+              const SizedBox(width: 8),
+              Text(
+                'Question $currentQuestion/$totalQuestions',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[700],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.green[600],
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.eco, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                'Score: $score',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
