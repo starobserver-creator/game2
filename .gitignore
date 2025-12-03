@@ -119,6 +119,9 @@ macos/Flutter/GeneratedPluginRegistrant.swift
 .env
 .env.local
 .env.*.local
+/test
+package_config.json
+package_graph.json
 
 # IDE
 .vscode/launch.json
