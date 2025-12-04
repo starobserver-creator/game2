@@ -114,11 +114,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // Find the play button (GestureDetector with Image)
+    // Find the play button (GestureDetector with CustomPaint)
     final playButtonFinder = find.byWidgetPredicate((widget) {
       return widget is GestureDetector &&
           widget.child is SizedBox &&
-          (widget.child as SizedBox).child is Image;
+          (widget.child as SizedBox).child is CustomPaint;
     });
 
     expect(playButtonFinder, findsOneWidget,

@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen>
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                      'assets/images/ProfDavisGreen/davisarm.png',
+                      'assets/images/ProfDavisGreen/davisarms.png',
                     ),
                     fit: BoxFit.contain,
                   ),
@@ -252,11 +252,10 @@ class _HomeScreenState extends State<HomeScreen>
                       child: SizedBox(
                         width: 160,
                         height: 160,
-                        child: Image.asset(
-                          _isPressed
-                              ? 'assets/images/UI/bplay2.png'
-                              : 'assets/images/UI/bplay1.png',
-                          fit: BoxFit.contain,
+                        child: CustomPaint(
+                          painter: GreenPlayButtonPainter(
+                            isPressed: _isPressed,
+                          ),
                         ),
                       ),
                     ),
@@ -283,4 +282,59 @@ class _Cloud {
     required this.speed,
     required this.asset,
   });
+}
+
+/// Custom painter for a green play button with white triangle arrow
+class GreenPlayButtonPainter extends CustomPainter {
+  final bool isPressed;
+
+  GreenPlayButtonPainter({required this.isPressed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = isPressed ? Colors.green[700]! : Colors.green[600]!
+      ..style = PaintingStyle.fill;
+
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.3)
+      ..style = PaintingStyle.fill;
+
+    // Draw shadow
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2 + 4),
+      size.width / 2 * 0.95,
+      shadowPaint,
+    );
+
+    // Draw main circle
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      size.width / 2 * 0.95,
+      paint,
+    );
+
+    // Draw white triangle arrow pointing right
+    final trianglePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final triangleSize = size.width * 0.35;
+
+    final path = Path();
+    // Right-pointing triangle
+    path.moveTo(centerX - triangleSize / 2, centerY - triangleSize / 2.5);
+    path.lineTo(centerX + triangleSize / 2, centerY);
+    path.lineTo(centerX - triangleSize / 2, centerY + triangleSize / 2.5);
+    path.close();
+
+    canvas.drawPath(path, trianglePaint);
+  }
+
+  @override
+  bool shouldRepaint(GreenPlayButtonPainter oldDelegate) {
+    return oldDelegate.isPressed != isPressed;
+  }
 }
