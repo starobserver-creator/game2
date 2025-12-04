@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'main.dart';
+import 'game.dart';
 import 'keyboard_navigation.dart';
 import 'package:flutter/services.dart';
 
@@ -308,7 +309,12 @@ class _EndScreenState extends State<EndScreen>
                         KeyboardAccessibleButton(
                           semanticLabel: 'Try Again - Retake the quiz. Press Right arrow or D to navigate.',
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => const QuizGame(),
+                              ),
+                              (route) => false,
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
