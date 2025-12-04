@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Davis Sustainability Success',
+      title: 'A Greener Davis Adventure',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomeScreen(),
     );
