@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'game.dart';
-import 'scoreboard.dart';
+import 'keyboard_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -228,12 +228,11 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
-                  GestureDetector(
-                    onTapDown: (_) {
-                      setState(() => _isPressed = true);
-                    },
-                    onTapUp: (_) {
-                      setState(() => _isPressed = false);
+                  KeyboardAccessibleButton(
+                    autofocus: true,
+                    hideOutlineForSingleButton: true,
+                    semanticLabel: 'Start quiz - Press Enter or Space to activate',
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -241,47 +240,32 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       );
                     },
-                    onTapCancel: () {
-                      setState(() => _isPressed = false);
-                    },
-                    child: SizedBox(
-                      width: 160,
-                      height: 160,
-                      child: Image.asset(
-                        _isPressed
-                            ? 'assets/images/UI/bplay2.png'
-                            : 'assets/images/UI/bplay1.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ScoreboardScreen(),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizGame(),
+                          ),
+                        );
+                      },
+                      onTapDown: (_) {
+                        setState(() => _isPressed = true);
+                      },
+                      onTapUp: (_) {
+                        setState(() => _isPressed = false);
+                      },
+                      onTapCancel: () {
+                        setState(() => _isPressed = false);
+                      },
+                      child: SizedBox(
+                        width: 160,
+                        height: 160,
+                        child: CustomPaint(
+                          painter: GreenPlayButtonPainter(
+                            isPressed: _isPressed,
+                          ),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.bar_chart, color: Colors.white),
-                    label: const Text(
-                      'View Scoreboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
@@ -307,4 +291,87 @@ class _Cloud {
     required this.speed,
     required this.asset,
   });
+}
+
+/// Custom painter for a sleek green play button with prominent white triangle arrow
+class GreenPlayButtonPainter extends CustomPainter {
+  final bool isPressed;
+
+  GreenPlayButtonPainter({required this.isPressed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final radius = size.width / 2 * 0.92;
+
+    // Draw 3D effect with darker shadow circle
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.4)
+      ..style = PaintingStyle.fill;
+
+    // Drop shadow
+    canvas.drawCircle(
+      Offset(centerX, centerY + 6),
+      radius,
+      shadowPaint,
+    );
+
+    // Main button circle - brighter green
+    final buttonPaint = Paint()
+      ..color = isPressed ? Colors.green[700]! : Colors.green[600]!
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      radius,
+      buttonPaint,
+    );
+
+    // Highlight on top-left for 3D bubbly effect
+    final highlightPaint = Paint()
+      ..color = Colors.green[300]!.withOpacity(0.6)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(centerX - radius * 0.35, centerY - radius * 0.35),
+      radius * 0.35,
+      highlightPaint,
+    );
+
+    // White outline around the circle
+    final outlinePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      radius,
+      outlinePaint,
+    );
+
+    // Draw white triangle arrow - large and centered
+    final trianglePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    final triangleSize = size.width * 0.45;
+
+    final path = Path();
+    // Left point
+    path.moveTo(centerX - triangleSize / 2.5, centerY - triangleSize / 2.8);
+    // Right point (top)
+    path.lineTo(centerX + triangleSize / 2.2, centerY);
+    // Right point (bottom)
+    path.lineTo(centerX - triangleSize / 2.5, centerY + triangleSize / 2.8);
+    path.close();
+
+    canvas.drawPath(path, trianglePaint);
+  }
+
+  @override
+  bool shouldRepaint(GreenPlayButtonPainter oldDelegate) {
+    return oldDelegate.isPressed != isPressed;
+  }
 }
