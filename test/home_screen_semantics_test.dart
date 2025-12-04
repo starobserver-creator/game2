@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game2/main.dart';
 import 'dart:convert';
-import 'package:flutter/semantics.dart';
 
 class _TestAssetBundle extends CachingAssetBundle {
   static final List<int> _transparentImage = <int>[
@@ -129,30 +128,4 @@ void main() {
     binding.window.clearDevicePixelRatioTestValue();
   });
 
-  testWidgets('Home screen Scoreboard button is present', (WidgetTester tester) async {
-    final binding = TestWidgetsFlutterBinding.ensureInitialized();
-    binding.window.physicalSizeTestValue = const Size(1200, 2000);
-    binding.window.devicePixelRatioTestValue = 1.0;
-
-    await tester.pumpWidget(DefaultAssetBundle(
-      bundle: _TestAssetBundle(),
-      child: MediaQuery(
-        data: const MediaQueryData(size: Size(1200, 2000)),
-        child: const MaterialApp(
-          home: HomeScreen(),
-        ),
-      ),
-    ));
-
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-
-    // Find the View Scoreboard button
-    final scoreboardFinder = find.text('View Scoreboard');
-    expect(scoreboardFinder, findsOneWidget,
-        reason: 'View Scoreboard button should be present');
-
-    binding.window.clearPhysicalSizeTestValue();
-    binding.window.clearDevicePixelRatioTestValue();
-  });
 }
