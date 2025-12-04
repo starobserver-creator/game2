@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'tamper_proof_score_manager.dart';
 import 'end_screen.dart';
 import 'keyboard_navigation.dart';
+import 'main.dart';
 
 class QuizGame extends StatefulWidget {
   const QuizGame({super.key});
@@ -345,6 +346,17 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
     if (event is! RawKeyDownEvent) {
       return KeyEventResult.ignored;
+    }
+
+    // Handle ESC to reset quiz and go home
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+        (route) => false,
+      );
+      return KeyEventResult.handled;
     }
 
     // Handle WASD and Arrow keys for answer navigation

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'main.dart';
 import 'keyboard_navigation.dart';
+import 'package:flutter/services.dart';
 
 class EndScreen extends StatefulWidget {
   final int score;
@@ -57,6 +58,26 @@ class _EndScreenState extends State<EndScreen>
     super.dispose();
   }
 
+  /// Handle keyboard key events
+  KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    // Handle ESC to reset quiz and go home
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+        (route) => false,
+      );
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   Color _getRandomColor() {
     final colors = [
       Colors.red,
@@ -73,43 +94,46 @@ class _EndScreenState extends State<EndScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.green[100]!,
-              Colors.blue[50]!,
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Confetti
-            AnimatedBuilder(
-              animation: _confettiController,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: ConfettiPainter(
-                    confetti: _confetti,
-                    progress: _confettiController.value,
-                  ),
-                  size: Size.infinite,
-                );
-              },
+    return Focus(
+      onKey: _handleKeyboardKey,
+      autofocus: true,
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.green[100]!,
+                Colors.blue[50]!,
+              ],
             ),
+          ),
+          child: Stack(
+            children: [
+              // Confetti
+              AnimatedBuilder(
+                animation: _confettiController,
+                builder: (context, child) {
+                  return CustomPaint(
+                    painter: ConfettiPainter(
+                      confetti: _confetti,
+                      progress: _confettiController.value,
+                    ),
+                    size: Size.infinite,
+                  );
+                },
+              ),
 
-            // Content
-            SafeArea(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+              // Content
+              SafeArea(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                     // Celebration emoji
                     const Text(
                       '🎉',
@@ -234,7 +258,7 @@ class _EndScreenState extends State<EndScreen>
                       children: [
                         KeyboardAccessibleButton(
                           autofocus: true,
-                          semanticLabel: 'Home - Return to home screen',
+                          semanticLabel: 'Home - Return to home screen. Press Left arrow or A to navigate.',
                           onPressed: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
@@ -243,7 +267,22 @@ class _EndScreenState extends State<EndScreen>
                               (route) => false,
                             );
                           },
-                          child: Padding(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green[600]!,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.green[800]!,
+                                width: 3,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 14,
@@ -258,6 +297,7 @@ class _EndScreenState extends State<EndScreen>
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
@@ -266,11 +306,26 @@ class _EndScreenState extends State<EndScreen>
                         ),
                         const SizedBox(width: 16),
                         KeyboardAccessibleButton(
-                          semanticLabel: 'Try Again - Retake the quiz',
+                          semanticLabel: 'Try Again - Retake the quiz. Press Right arrow or D to navigate.',
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Padding(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.blue[600]!,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.blue[800]!,
+                                width: 3,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 14,
@@ -285,6 +340,7 @@ class _EndScreenState extends State<EndScreen>
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
@@ -299,6 +355,7 @@ class _EndScreenState extends State<EndScreen>
             ),
           ],
         ),
+      ),
       ),
     );
   }

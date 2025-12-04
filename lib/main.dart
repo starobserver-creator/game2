@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen>
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                      'assets/images/ProfDavisGreen/davisarms.png',
+                      'assets/images/ProfDavisGreen/davisarm.png',
                     ),
                     fit: BoxFit.contain,
                   ),
@@ -230,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 24),
                   KeyboardAccessibleButton(
                     autofocus: true,
+                    hideOutlineForSingleButton: true,
                     semanticLabel: 'Start quiz - Press Enter or Space to activate',
                     onPressed: () {
                       Navigator.push(
@@ -240,6 +241,14 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     },
                     child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizGame(),
+                          ),
+                        );
+                      },
                       onTapDown: (_) {
                         setState(() => _isPressed = true);
                       },
@@ -284,7 +293,7 @@ class _Cloud {
   });
 }
 
-/// Custom painter for a green play button with white triangle arrow
+/// Custom painter for a sleek green play button with prominent white triangle arrow
 class GreenPlayButtonPainter extends CustomPainter {
   final bool isPressed;
 
@@ -292,42 +301,70 @@ class GreenPlayButtonPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = isPressed ? Colors.green[700]! : Colors.green[600]!
-      ..style = PaintingStyle.fill;
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final radius = size.width / 2 * 0.92;
 
+    // Draw 3D effect with darker shadow circle
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.3)
+      ..color = Colors.black.withOpacity(0.4)
       ..style = PaintingStyle.fill;
 
-    // Draw shadow
+    // Drop shadow
     canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2 + 4),
-      size.width / 2 * 0.95,
+      Offset(centerX, centerY + 6),
+      radius,
       shadowPaint,
     );
 
-    // Draw main circle
+    // Main button circle - brighter green
+    final buttonPaint = Paint()
+      ..color = isPressed ? Colors.green[700]! : Colors.green[600]!
+      ..style = PaintingStyle.fill;
+
     canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      size.width / 2 * 0.95,
-      paint,
+      Offset(centerX, centerY),
+      radius,
+      buttonPaint,
     );
 
-    // Draw white triangle arrow pointing right
+    // Highlight on top-left for 3D bubbly effect
+    final highlightPaint = Paint()
+      ..color = Colors.green[300]!.withOpacity(0.6)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(centerX - radius * 0.35, centerY - radius * 0.35),
+      radius * 0.35,
+      highlightPaint,
+    );
+
+    // White outline around the circle
+    final outlinePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      radius,
+      outlinePaint,
+    );
+
+    // Draw white triangle arrow - large and centered
     final trianglePaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
 
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-    final triangleSize = size.width * 0.35;
+    final triangleSize = size.width * 0.45;
 
     final path = Path();
-    // Right-pointing triangle
-    path.moveTo(centerX - triangleSize / 2, centerY - triangleSize / 2.5);
-    path.lineTo(centerX + triangleSize / 2, centerY);
-    path.lineTo(centerX - triangleSize / 2, centerY + triangleSize / 2.5);
+    // Left point
+    path.moveTo(centerX - triangleSize / 2.5, centerY - triangleSize / 2.8);
+    // Right point (top)
+    path.lineTo(centerX + triangleSize / 2.2, centerY);
+    // Right point (bottom)
+    path.lineTo(centerX - triangleSize / 2.5, centerY + triangleSize / 2.8);
     path.close();
 
     canvas.drawPath(path, trianglePaint);

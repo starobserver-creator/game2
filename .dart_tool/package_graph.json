@@ -1,10 +1,10 @@
 {
   "roots": [
-    "game2"
+    "Greener_Davis_Adventure"
   ],
   "packages": [
     {
-      "name": "game2",
+      "name": "Greener_Davis_Adventure",
       "version": "1.0.0+1",
       "dependencies": [
         "cupertino_icons",
