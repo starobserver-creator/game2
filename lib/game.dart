@@ -425,7 +425,11 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       autofocus: true,
       child: Scaffold(
       appBar: AppBar(
-        title: const Text('🌱 Sustainability Quiz'),
+        title: const Semantics(
+          label: 'Sustainability Quiz',
+          header: true,
+          child: Text('🌱 Sustainability Quiz'),
+        ),
         backgroundColor: Colors.green[700],
         foregroundColor: Colors.white,
         elevation: 2,
@@ -566,7 +570,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       borderColor = Colors.blue[800]!;
       iconColor = Colors.white;
       textColor = Colors.white;
-      accessibilityLabel = "Option ${index + 1}: ${questions[currentQuestionIndex].options[index].text}. Press ${index + 1} or tap to select";
+      accessibilityLabel = "Answer option ${index + 1}: ${questions[currentQuestionIndex].options[index].text}";
     }
     
     return Semantics(
@@ -672,7 +676,7 @@ class _QuestionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: "Question $questionNumber of $totalQuestions",
+      label: "Question $questionNumber of $totalQuestions: ${question.questionText}",
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -688,22 +692,24 @@ class _QuestionWidget extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(
-              Icons.help_outline,
-              size: 40,
-              color: Colors.green[600],
-              semanticLabel: "Question",
+            ExcludeSemantics(
+              child: Icon(
+                Icons.help_outline,
+                size: 40,
+                color: Colors.green[600],
+              ),
             ),
             const SizedBox(height: 16),
-            Text(
-              question.questionText,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+            ExcludeSemantics(
+              child: Text(
+                question.questionText,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-              semanticsLabel: question.questionText,
             ),
           ],
         ),
@@ -885,59 +891,65 @@ class _FrogBubble extends StatelessWidget {
             final bubbleFontSize = isMobile ? 11.0 : 12.0;
             final containerPadding = isMobile ? 12.0 : 16.0;
             
-            return Transform.translate(
-              offset: Offset(0, -animation.value),
-              child: Container(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                decoration: BoxDecoration(
-                  color: Colors.green[50]!.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.green[300]!, width: 2),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(containerPadding),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: frogSize,
-                        height: frogSize,
-                        decoration: BoxDecoration(
-                          color: Colors.green[200],
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.green[600]!, width: 2),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '🐸',
-                            style: TextStyle(fontSize: frogEmoji),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: isMobile ? 8 : 12),
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile ? 10 : 12,
-                            vertical: isMobile ? 6 : 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            message,
-                            style: TextStyle(
-                              fontSize: bubbleFontSize,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.green[800],
+            return Semantics(
+              label: 'Professor Davis Green says: $message',
+              liveRegion: true,
+              child: Transform.translate(
+                offset: Offset(0, -animation.value),
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50]!.withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.green[300]!, width: 2),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(containerPadding),
+                    child: ExcludeSemantics(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: frogSize,
+                            height: frogSize,
+                            decoration: BoxDecoration(
+                              color: Colors.green[200],
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.green[600]!, width: 2),
                             ),
-                            maxLines: isMobile ? 2 : 3,
-                            overflow: TextOverflow.ellipsis,
+                            child: Center(
+                              child: Text(
+                                '🐸',
+                                style: TextStyle(fontSize: frogEmoji),
+                              ),
+                            ),
                           ),
-                        ),
+                          SizedBox(width: isMobile ? 8 : 12),
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 10 : 12,
+                                vertical: isMobile ? 6 : 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.9),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                message,
+                                style: TextStyle(
+                                  fontSize: bubbleFontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green[800],
+                                ),
+                                maxLines: isMobile ? 2 : 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -1014,58 +1026,68 @@ class _ScoreHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.quiz, color: Colors.green[600]),
-              const SizedBox(width: 8),
-              Text(
-                'Question $currentQuestion/$totalQuestions',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green[700],
+        Semantics(
+          label: 'Currently on question $currentQuestion of $totalQuestions',
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 5,
                 ),
+              ],
+            ),
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Icon(Icons.quiz, color: Colors.green[600]),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Question $currentQuestion/$totalQuestions',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.green[600],
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.eco, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                'Score: $score',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        Semantics(
+          label: 'Current score: $score out of $totalQuestions',
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.green[600],
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 5,
                 ),
+              ],
+            ),
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  const Icon(Icons.eco, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Score: $score',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ],

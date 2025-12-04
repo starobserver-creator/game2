@@ -136,104 +136,119 @@ class _EndScreenState extends State<EndScreen>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                     // Celebration emoji
-                    const Text(
-                      '🎉',
-                      style: TextStyle(fontSize: 80),
+                    const Semantics(
+                      label: 'Celebration',
+                      child: Text(
+                        '🎉',
+                        style: TextStyle(fontSize: 80),
+                      ),
                     ),
                     const SizedBox(height: 24),
 
                     // Thank you message
-                    const Text(
-                      'Thanks for Playing!',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 16, 0, 134),
+                    const Semantics(
+                      label: 'Thanks for Playing!',
+                      header: true,
+                      child: Text(
+                        'Thanks for Playing!',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 16, 0, 134),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
 
                     // Congratulations message
-                    Text(
-                      'You\'re helping save our planet! 🌍',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w600,
+                    Semantics(
+                      label: 'You\'re helping save our planet!',
+                      child: Text(
+                        'You\'re helping save our planet! 🌍',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
 
                     // Score display
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Final Score',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
+                    Semantics(
+                      label: 'Final Score: ${widget.score} out of ${widget.totalQuestions}, which is ${widget.percentage.toStringAsFixed(1)} percent',
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
+                          ],
+                        ),
+                        child: ExcludeSemantics(
+                          child: Column(
                             children: [
-                              Text(
-                                '${widget.score}',
+                              const Text(
+                                'Final Score',
                                 style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[600],
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '/ ${widget.totalQuestions}',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${widget.score}',
+                                    style: TextStyle(
+                                      fontSize: 48,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green[600],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '/ ${widget.totalQuestions}',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getPercentageColor(widget.percentage)
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${widget.percentage.toStringAsFixed(1)}%',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getPercentageColor(widget.percentage),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getPercentageColor(widget.percentage)
-                                  .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${widget.percentage.toStringAsFixed(1)}%',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: _getPercentageColor(widget.percentage),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -259,7 +274,7 @@ class _EndScreenState extends State<EndScreen>
                       children: [
                         KeyboardAccessibleButton(
                           autofocus: true,
-                          semanticLabel: 'Home - Return to home screen. Press Left arrow or A to navigate.',
+                          semanticLabel: 'Home button. Return to home screen',
                           onPressed: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
@@ -307,7 +322,7 @@ class _EndScreenState extends State<EndScreen>
                         ),
                         const SizedBox(width: 16),
                         KeyboardAccessibleButton(
-                          semanticLabel: 'Try Again - Retake the quiz. Press Right arrow or D to navigate.',
+                          semanticLabel: 'Try Again button. Retake the quiz',
                           onPressed: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
