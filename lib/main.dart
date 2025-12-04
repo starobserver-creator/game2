@@ -224,14 +224,22 @@ class _HomeScreenState extends State<HomeScreen>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _outlinedTitleLine('A Greener Davis'),
-                  const SizedBox(height: 8),
-                  _outlinedTitleLine('Adventure!'),
+                  Semantics(
+                    label: 'A Greener Davis Adventure',
+                    header: true,
+                    child: Column(
+                      children: [
+                        ExcludeSemantics(child: _outlinedTitleLine('A Greener Davis')),
+                        const SizedBox(height: 8),
+                        ExcludeSemantics(child: _outlinedTitleLine('Adventure!')),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   KeyboardAccessibleButton(
                     autofocus: true,
                     hideOutlineForSingleButton: true,
-                    semanticLabel: 'Start quiz - Press Enter or Space to activate',
+                    semanticLabel: 'Play button. Start the sustainability quiz',
                     onPressed: () {
                       Navigator.push(
                         context,

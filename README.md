@@ -8,6 +8,7 @@ This repository contains the source code for a mobile game designed to promote s
 - Educational content about sustainability practices in Davis
 - Engaging challenges and activities for players
 - Modern Flutter-based codebase, supporting cross-platform (iOS & Android)
+- **Comprehensive screen reader support** for accessibility
 
 ## Getting Started
 
@@ -41,6 +42,17 @@ This repository contains the source code for a mobile game designed to promote s
 - `lib/` - Main Dart codebase
 - `assets/` - Images, sounds, and other assets
 - `test/` - Automated tests
+
+## Accessibility
+
+This application includes comprehensive screen reader support to ensure all users can enjoy the sustainability quiz:
+
+- **Descriptive Labels**: All buttons and interactive elements have clear semantic labels describing their purpose
+- **Screen Reader Navigation**: Question numbers, scores, and feedback are announced clearly
+- **Live Regions**: Dynamic feedback from Professor Davis Green is announced automatically
+- **Keyboard Support**: Full keyboard navigation with WASD/Arrow keys, Enter/Space for selection, and Escape to return home
+
+The semantic labels focus on describing *what* elements are rather than *how* to interact with them, providing a natural and intuitive experience for screen reader users.
 
 ## Contributing
 
