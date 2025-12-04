@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'game.dart';
+import 'keyboard_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -227,12 +228,10 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
                   _outlinedTitleLine('Adventure!'),
                   const SizedBox(height: 24),
-                  GestureDetector(
-                    onTapDown: (_) {
-                      setState(() => _isPressed = true);
-                    },
-                    onTapUp: (_) {
-                      setState(() => _isPressed = false);
+                  KeyboardAccessibleButton(
+                    autofocus: true,
+                    semanticLabel: 'Start quiz - Press Enter or Space to activate',
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -240,17 +239,25 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       );
                     },
-                    onTapCancel: () {
-                      setState(() => _isPressed = false);
-                    },
-                    child: SizedBox(
-                      width: 160,
-                      height: 160,
-                      child: Image.asset(
-                        _isPressed
-                            ? 'assets/images/UI/bplay2.png'
-                            : 'assets/images/UI/bplay1.png',
-                        fit: BoxFit.contain,
+                    child: GestureDetector(
+                      onTapDown: (_) {
+                        setState(() => _isPressed = true);
+                      },
+                      onTapUp: (_) {
+                        setState(() => _isPressed = false);
+                      },
+                      onTapCancel: () {
+                        setState(() => _isPressed = false);
+                      },
+                      child: SizedBox(
+                        width: 160,
+                        height: 160,
+                        child: Image.asset(
+                          _isPressed
+                              ? 'assets/images/UI/bplay2.png'
+                              : 'assets/images/UI/bplay1.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),

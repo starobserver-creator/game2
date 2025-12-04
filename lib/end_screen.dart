@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'main.dart';
+import 'keyboard_navigation.dart';
 
 class EndScreen extends StatefulWidget {
   final int score;
@@ -231,7 +232,9 @@ class _EndScreenState extends State<EndScreen>
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ElevatedButton.icon(
+                        KeyboardAccessibleButton(
+                          autofocus: true,
+                          semanticLabel: 'Home - Return to home screen',
                           onPressed: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
@@ -240,46 +243,51 @@ class _EndScreenState extends State<EndScreen>
                               (route) => false,
                             );
                           },
-                          icon: const Icon(Icons.home, color: Colors.white),
-                          label: const Text(
-                            'Home',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green[600],
+                          child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 14,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.home, color: Colors.white),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Home',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 16),
-                        ElevatedButton.icon(
+                        KeyboardAccessibleButton(
+                          semanticLabel: 'Try Again - Retake the quiz',
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          icon: const Icon(Icons.refresh, color: Colors.white),
-                          label: const Text(
-                            'Try Again',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
+                          child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 14,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.refresh, color: Colors.white),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Try Again',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

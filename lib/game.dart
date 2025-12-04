@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'tamper_proof_score_manager.dart';
 import 'end_screen.dart';
+import 'keyboard_navigation.dart';
 
 class QuizGame extends StatefulWidget {
   const QuizGame({super.key});
@@ -15,6 +16,11 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   int score = 0;
   bool isAnswered = false;
   int? selectedAnswer;
+  
+  // Keyboard navigation
+  late AnswerFocusController _answerFocusController;
+  int? _keyboardFocusedAnswerIndex;
+  late FocusNode _nextButtonFocusNode;
   
   // Frog chat system
   bool showFrog = true;
@@ -185,6 +191,9 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
         currentQuestionIndex++;
         isAnswered = false;
         selectedAnswer = null;
+        _keyboardFocusedAnswerIndex = null;
+        _answerFocusController.reset();
+        _updateFrogMessage();
       }
     });
   }
@@ -213,11 +222,23 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     _scoreManager = TamperProofScoreManager();
     _initializeFrogAnimation();
     _showWelcomeMessage();
+    
+    // Initialize keyboard navigation
+    _nextButtonFocusNode = FocusNode();
+    _answerFocusController = AnswerFocusController(
+      totalOptions: questions[currentQuestionIndex].options.length,
+      onFocusChanged: (index) {
+        setState(() {
+          _keyboardFocusedAnswerIndex = index;
+        });
+      },
+    );
   }
 
   @override
   void dispose() {
     _frogAnimationController.dispose();
+    _nextButtonFocusNode.dispose();
     super.dispose();
   }
 
@@ -322,6 +343,18 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
 
   /// Handle keyboard key events
   KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    // Handle WASD and Arrow keys for answer navigation
+    if (!isAnswered) {
+      if (_answerFocusController.handleKeyEvent(event, isAnswered: isAnswered)) {
+        return KeyEventResult.handled;
+      }
+    }
+
+    // Handle number keys 1-4 for direct answer selection
     if (event.isKeyPressed(LogicalKeyboardKey.digit1)) {
       _handleKeyboardAnswer(0);
       return KeyEventResult.handled;
@@ -334,11 +367,22 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
     } else if (event.isKeyPressed(LogicalKeyboardKey.digit4)) {
       _handleKeyboardAnswer(3);
       return KeyEventResult.handled;
-    } else if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
-        event.isKeyPressed(LogicalKeyboardKey.space)) {
-      _handleKeyboardAction();
-      return KeyEventResult.handled;
     }
+
+    // Handle Enter/Space for selecting focused answer or moving to next question
+    if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
+        event.isKeyPressed(LogicalKeyboardKey.space)) {
+      if (!isAnswered && _keyboardFocusedAnswerIndex != null) {
+        // Select the focused answer
+        _handleKeyboardAnswer(_keyboardFocusedAnswerIndex!);
+        return KeyEventResult.handled;
+      } else if (isAnswered) {
+        // Move to next question or end screen
+        _handleKeyboardAction();
+        return KeyEventResult.handled;
+      }
+    }
+
     return KeyEventResult.ignored;
   }
 
@@ -413,6 +457,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                     // Next/Restart button
                     if (isAnswered)
                       _NextButton(
+                        focusNode: _nextButtonFocusNode,
                         isQuizCompleted: isQuizCompleted,
                         onPressed: isQuizCompleted
                             ? () {
@@ -456,6 +501,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   Widget _buildAnswerButton(int index, double height) {
     bool isCorrect = index == questions[currentQuestionIndex].correctAnswer;
     bool isSelected = selectedAnswer == index;
+    bool isKeyboardFocused = _keyboardFocusedAnswerIndex == index;
     
     Color buttonColor;
     Color borderColor;
@@ -496,69 +542,79 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
       button: true,
       enabled: !isAnswered,
       onTap: !isAnswered ? () => selectAnswer(index) : null,
-      child: GestureDetector(
-        onTap: !isAnswered ? () => selectAnswer(index) : null,
-        child: Focus(
-          onKey: (node, event) {
-            if ((event.isKeyPressed(LogicalKeyboardKey.enter) || 
-                event.isKeyPressed(LogicalKeyboardKey.space)) && !isAnswered) {
-              selectAnswer(index);
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          onFocusChange: (hasFocus) {
-            // Provide visual feedback on focus via snackbar
-            if (hasFocus && !isAnswered) {
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(accessibilityLabel),
-                  duration: const Duration(milliseconds: 1500),
-                  backgroundColor: Colors.blue[800],
-                ),
-              );
-            }
-          },
-          child: Container(
-            height: height,
-            decoration: BoxDecoration(
-              color: buttonColor,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: borderColor, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  questions[currentQuestionIndex].options[index].icon,
-                  size: height * 0.3,
-                  color: iconColor,
-                  semanticLabel: questions[currentQuestionIndex].options[index].text,
-                ),
-                SizedBox(height: height * 0.1),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: height * 0.05),
-                  child: Text(
-                    questions[currentQuestionIndex].options[index].text,
-                    style: TextStyle(
-                      fontSize: (height * 0.14).clamp(12, 18),  // Larger font for accessibility
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+      child: FocusOutlineContainer(
+        isFocused: isKeyboardFocused,
+        borderRadius: BorderRadius.circular(15),
+        child: GestureDetector(
+          onTap: !isAnswered ? () => selectAnswer(index) : null,
+          child: Focus(
+            onKey: (node, event) {
+              if ((event.isKeyPressed(LogicalKeyboardKey.enter) || 
+                  event.isKeyPressed(LogicalKeyboardKey.space)) && !isAnswered) {
+                selectAnswer(index);
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            onFocusChange: (hasFocus) {
+              // Track Tab focus for Tab navigation support
+              if (hasFocus && !isAnswered) {
+                setState(() {
+                  _keyboardFocusedAnswerIndex = index;
+                });
+              }
+              // Provide visual feedback on focus via snackbar
+              if (hasFocus && !isAnswered) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(accessibilityLabel),
+                    duration: const Duration(milliseconds: 1500),
+                    backgroundColor: Colors.blue[800],
                   ),
-                ),
-              ],
+                );
+              }
+            },
+            child: Container(
+              height: height,
+              decoration: BoxDecoration(
+                color: buttonColor,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: borderColor, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    questions[currentQuestionIndex].options[index].icon,
+                    size: height * 0.3,
+                    color: iconColor,
+                    semanticLabel: questions[currentQuestionIndex].options[index].text,
+                  ),
+                  SizedBox(height: height * 0.1),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: height * 0.05),
+                    child: Text(
+                      questions[currentQuestionIndex].options[index].text,
+                      style: TextStyle(
+                        fontSize: (height * 0.14).clamp(12, 18),  // Larger font for accessibility
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -680,40 +736,91 @@ class _AnswerButtonsGrid extends StatelessWidget {
 }
 
 /// Next button widget
-class _NextButton extends StatelessWidget {
+class _NextButton extends StatefulWidget {
   final bool isQuizCompleted;
   final VoidCallback onPressed;
+  final FocusNode? focusNode;
 
   const _NextButton({
     required this.isQuizCompleted,
     required this.onPressed,
+    this.focusNode,
   });
+
+  @override
+  State<_NextButton> createState() => _NextButtonState();
+}
+
+class _NextButtonState extends State<_NextButton> {
+  late FocusNode _focusNode;
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    } else {
+      _focusNode.removeListener(_handleFocusChange);
+    }
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
+    if ((event.isKeyPressed(LogicalKeyboardKey.enter) ||
+        event.isKeyPressed(LogicalKeyboardKey.space)) &&
+        event is RawKeyDownEvent) {
+      widget.onPressed();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 20),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(
-          isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
-          color: Colors.white,
-        ),
-        label: Text(
-          isQuizCompleted ? 'See Results' : 'Next Question',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+      child: FocusOutlineContainer(
+        isFocused: _isFocused,
+        borderRadius: BorderRadius.circular(15),
+        child: Focus(
+          focusNode: _focusNode,
+          onKey: _handleKeyEvent,
+          child: ElevatedButton.icon(
+            onPressed: widget.onPressed,
+            icon: Icon(
+              widget.isQuizCompleted ? Icons.celebration : Icons.arrow_forward,
+              color: Colors.white,
+            ),
+            label: Text(
+              widget.isQuizCompleted ? 'See Results' : 'Next Question',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: widget.isQuizCompleted ? Colors.purple[600] : Colors.green[600],
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 8,
+            ),
           ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isQuizCompleted ? Colors.purple[600] : Colors.green[600],
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 8,
         ),
       ),
     );
