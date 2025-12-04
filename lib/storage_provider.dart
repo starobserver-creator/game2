@@ -79,26 +79,3 @@ class MemoryStorageProvider implements StorageProvider {
     _memoryStorage.remove(key);
   }
 }
-
-/// Factory to get appropriate storage provider
-StorageProvider _getStorageProvider() {
-  try {
-    // Try to detect if we're on web
-    final isWeb = _isWebPlatform();
-    if (isWeb) {
-      return WebStorageProvider();
-    }
-  } catch (e) {
-    // Ignore
-  }
-  return MemoryStorageProvider();
-}
-
-bool _isWebPlatform() {
-  try {
-    // Check if dart:html is available
-    return true; // Optimistic: assume web if no error
-  } catch (e) {
-    return false;
-  }
-}

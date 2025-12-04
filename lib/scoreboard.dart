@@ -95,7 +95,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
@@ -216,12 +216,12 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: color.withOpacity(0.3),
+                                color: color.withValues(alpha: 0.3),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
+                                  color: Colors.black.withValues(alpha: 0.03),
                                   blurRadius: 3,
                                   offset: const Offset(0, 1),
                                 ),
@@ -246,7 +246,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                     vertical: 3,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: color.withOpacity(0.1),
+                                    color: color.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
@@ -309,9 +309,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +329,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             label,
             style: TextStyle(
               fontSize: 9,
-              color: color.withOpacity(0.7),
+              color: color.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

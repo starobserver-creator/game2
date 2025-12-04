@@ -343,13 +343,14 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   }
 
   /// Handle keyboard key events
-  KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
-    if (event is! RawKeyDownEvent) {
+  /// Handle keyboard key events
+  KeyEventResult _handleKeyboardKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }
 
     // Handle ESC to reset quiz and go home
-    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+    if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const HomeScreen(),
@@ -361,29 +362,48 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
 
     // Handle WASD and Arrow keys for answer navigation
     if (!isAnswered) {
-      if (_answerFocusController.handleKeyEvent(event, isAnswered: isAnswered)) {
-        return KeyEventResult.handled;
+      // Use the event's logicalKey to check for navigation keys
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+          event.logicalKey == LogicalKeyboardKey.keyW) {
+        if (_answerFocusController.handleNavigationKey(LogicalKeyboardKey.arrowUp, isAnswered: isAnswered)) {
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
+          event.logicalKey == LogicalKeyboardKey.keyS) {
+        if (_answerFocusController.handleNavigationKey(LogicalKeyboardKey.arrowDown, isAnswered: isAnswered)) {
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+          event.logicalKey == LogicalKeyboardKey.keyA) {
+        if (_answerFocusController.handleNavigationKey(LogicalKeyboardKey.arrowLeft, isAnswered: isAnswered)) {
+          return KeyEventResult.handled;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+          event.logicalKey == LogicalKeyboardKey.keyD) {
+        if (_answerFocusController.handleNavigationKey(LogicalKeyboardKey.arrowRight, isAnswered: isAnswered)) {
+          return KeyEventResult.handled;
+        }
       }
     }
 
     // Handle number keys 1-4 for direct answer selection
-    if (event.isKeyPressed(LogicalKeyboardKey.digit1)) {
+    if (event.logicalKey == LogicalKeyboardKey.digit1) {
       _handleKeyboardAnswer(0);
       return KeyEventResult.handled;
-    } else if (event.isKeyPressed(LogicalKeyboardKey.digit2)) {
+    } else if (event.logicalKey == LogicalKeyboardKey.digit2) {
       _handleKeyboardAnswer(1);
       return KeyEventResult.handled;
-    } else if (event.isKeyPressed(LogicalKeyboardKey.digit3)) {
+    } else if (event.logicalKey == LogicalKeyboardKey.digit3) {
       _handleKeyboardAnswer(2);
       return KeyEventResult.handled;
-    } else if (event.isKeyPressed(LogicalKeyboardKey.digit4)) {
+    } else if (event.logicalKey == LogicalKeyboardKey.digit4) {
       _handleKeyboardAnswer(3);
       return KeyEventResult.handled;
     }
 
     // Handle Enter/Space for selecting focused answer or moving to next question
-    if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
-        event.isKeyPressed(LogicalKeyboardKey.space)) {
+    if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.space) {
       if (!isAnswered && _keyboardFocusedAnswerIndex != null) {
         // Select the focused answer
         _handleKeyboardAnswer(_keyboardFocusedAnswerIndex!);
@@ -401,7 +421,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      onKey: _handleKeyboardKey,
+      onKeyEvent: _handleKeyboardKey,
       autofocus: true,
       child: Scaffold(
       appBar: AppBar(
@@ -560,9 +580,10 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
         child: GestureDetector(
           onTap: !isAnswered ? () => selectAnswer(index) : null,
           child: Focus(
-            onKey: (node, event) {
-              if ((event.isKeyPressed(LogicalKeyboardKey.enter) || 
-                  event.isKeyPressed(LogicalKeyboardKey.space)) && !isAnswered) {
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.enter || 
+                   event.logicalKey == LogicalKeyboardKey.space) && !isAnswered) {
                 selectAnswer(index);
                 return KeyEventResult.handled;
               }
@@ -595,7 +616,7 @@ class _QuizGameState extends State<QuizGame> with TickerProviderStateMixin {
                 border: Border.all(color: borderColor, width: 3),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -659,7 +680,7 @@ class _QuestionWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -790,10 +811,10 @@ class _NextButtonState extends State<_NextButton> {
     });
   }
 
-  KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
-    if ((event.isKeyPressed(LogicalKeyboardKey.enter) ||
-        event.isKeyPressed(LogicalKeyboardKey.space)) &&
-        event is RawKeyDownEvent) {
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if ((event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.space) &&
+        event is KeyDownEvent) {
       widget.onPressed();
       return KeyEventResult.handled;
     }
@@ -809,7 +830,7 @@ class _NextButtonState extends State<_NextButton> {
         borderRadius: BorderRadius.circular(15),
         child: Focus(
           focusNode: _focusNode,
-          onKey: _handleKeyEvent,
+          onKeyEvent: _handleKeyEvent,
           child: ElevatedButton.icon(
             onPressed: widget.onPressed,
             icon: Icon(
@@ -869,7 +890,7 @@ class _FrogBubble extends StatelessWidget {
               child: Container(
                 constraints: BoxConstraints(maxWidth: maxWidth),
                 decoration: BoxDecoration(
-                  color: Colors.green[50]!.withOpacity(0.85),
+                  color: Colors.green[50]!.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.green[300]!, width: 2),
                 ),
@@ -901,7 +922,7 @@ class _FrogBubble extends StatelessWidget {
                             vertical: isMobile ? 6 : 8,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -1000,7 +1021,7 @@ class _ScoreHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 5,
               ),
             ],
@@ -1027,7 +1048,7 @@ class _ScoreHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 5,
               ),
             ],
@@ -1051,3 +1072,4 @@ class _ScoreHeader extends StatelessWidget {
     );
   }
 }
+

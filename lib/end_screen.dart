@@ -59,13 +59,13 @@ class _EndScreenState extends State<EndScreen>
   }
 
   /// Handle keyboard key events
-  KeyEventResult _handleKeyboardKey(FocusNode node, RawKeyEvent event) {
-    if (event is! RawKeyDownEvent) {
+  KeyEventResult _handleKeyboardKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) {
       return KeyEventResult.ignored;
     }
 
     // Handle ESC to reset quiz and go home
-    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+    if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const HomeScreen(),
@@ -95,7 +95,7 @@ class _EndScreenState extends State<EndScreen>
   @override
   Widget build(BuildContext context) {
     return Focus(
-      onKey: _handleKeyboardKey,
+      onKeyEvent: _handleKeyboardKey,
       autofocus: true,
       child: Scaffold(
         body: Container(
@@ -173,7 +173,7 @@ class _EndScreenState extends State<EndScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -220,7 +220,7 @@ class _EndScreenState extends State<EndScreen>
                             ),
                             decoration: BoxDecoration(
                               color: _getPercentageColor(widget.percentage)
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -277,7 +277,7 @@ class _EndScreenState extends State<EndScreen>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),
@@ -320,7 +320,7 @@ class _EndScreenState extends State<EndScreen>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),

@@ -307,7 +307,7 @@ class GreenPlayButtonPainter extends CustomPainter {
 
     // Draw 3D effect with darker shadow circle
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.4)
+      ..color = Colors.black.withValues(alpha: 0.4)
       ..style = PaintingStyle.fill;
 
     // Drop shadow
@@ -330,7 +330,7 @@ class GreenPlayButtonPainter extends CustomPainter {
 
     // Highlight on top-left for 3D bubbly effect
     final highlightPaint = Paint()
-      ..color = Colors.green[300]!.withOpacity(0.6)
+      ..color = Colors.green[300]!.withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(

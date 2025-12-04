@@ -40,7 +40,7 @@ class FocusOutlineContainer extends StatelessWidget {
         boxShadow: shouldShowOutline
             ? [
                 BoxShadow(
-                  color: focusColor.withOpacity(0.5),  // Black shadow
+                  color: focusColor.withValues(alpha: 0.5),  // Black shadow
                   blurRadius: 16,  // Larger blur
                   spreadRadius: 6,  // Larger spread
                 ),
@@ -107,10 +107,10 @@ class _KeyboardAccessibleButtonState extends State<KeyboardAccessibleButton> {
     });
   }
 
-  KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
-    if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
-        event.isKeyPressed(LogicalKeyboardKey.space)) {
-      if (event is RawKeyDownEvent) {
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.space) {
+      if (event is KeyDownEvent) {
         // Mark as keyboard focused when key pressed
         setState(() => _isKeyboardFocused = true);
         widget.onPressed();
@@ -124,7 +124,7 @@ class _KeyboardAccessibleButtonState extends State<KeyboardAccessibleButton> {
   Widget build(BuildContext context) {
     return Focus(
       focusNode: _focusNode,
-      onKey: _handleKeyEvent,
+      onKeyEvent: _handleKeyEvent,
       autofocus: widget.autofocus,
       onFocusChange: (hasFocus) {
         // Set keyboard focused flag when gaining focus via keyboard
@@ -175,7 +175,7 @@ class AnswerFocusController {
   int? get currentFocusIndex => _currentFocusIndex;
 
   /// Returns true if key event was handled, false otherwise
-  bool handleKeyEvent(RawKeyEvent event, {required bool isAnswered}) {
+  bool handleNavigationKey(LogicalKeyboardKey key, {required bool isAnswered}) {
     if (isAnswered) {
       // After answering, only Tab moves focus
       return false;
@@ -184,8 +184,8 @@ class AnswerFocusController {
     int? newIndex;
 
     // Arrow keys and WASD for navigation
-    if (event.isKeyPressed(LogicalKeyboardKey.arrowUp) ||
-        event.isKeyPressed(LogicalKeyboardKey.keyW)) {
+    if (key == LogicalKeyboardKey.arrowUp ||
+        key == LogicalKeyboardKey.keyW) {
       if (_currentFocusIndex == null) {
         newIndex = 0;
       } else {
@@ -199,8 +199,8 @@ class AnswerFocusController {
           }
         }
       }
-    } else if (event.isKeyPressed(LogicalKeyboardKey.arrowDown) ||
-        event.isKeyPressed(LogicalKeyboardKey.keyS)) {
+    } else if (key == LogicalKeyboardKey.arrowDown ||
+        key == LogicalKeyboardKey.keyS) {
       if (_currentFocusIndex == null) {
         newIndex = 0;
       } else {
@@ -211,8 +211,8 @@ class AnswerFocusController {
           newIndex = _currentFocusIndex! % columnsPerRow;
         }
       }
-    } else if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft) ||
-        event.isKeyPressed(LogicalKeyboardKey.keyA)) {
+    } else if (key == LogicalKeyboardKey.arrowLeft ||
+        key == LogicalKeyboardKey.keyA) {
       if (_currentFocusIndex == null) {
         newIndex = 0;
       } else {
@@ -222,8 +222,8 @@ class AnswerFocusController {
         }
         // If already at leftmost, don't move (don't wrap)
       }
-    } else if (event.isKeyPressed(LogicalKeyboardKey.arrowRight) ||
-        event.isKeyPressed(LogicalKeyboardKey.keyD)) {
+    } else if (key == LogicalKeyboardKey.arrowRight ||
+        key == LogicalKeyboardKey.keyD) {
       if (_currentFocusIndex == null) {
         newIndex = 0;
       } else {
@@ -255,3 +255,4 @@ class AnswerFocusController {
     _currentFocusIndex = null;
   }
 }
+
