@@ -8,7 +8,9 @@ This repository contains the source code for a mobile game designed to promote s
 - Educational content about sustainability practices in Davis
 - Engaging challenges and activities for players
 - Modern Flutter-based codebase, supporting cross-platform (iOS & Android)
-
+## Play the game here
+-  (https://starobserver-creator.github.io/game2/)
+- 
 ## Getting Started
 
 ### Prerequisites
